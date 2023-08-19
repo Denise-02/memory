@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="Anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.game.memory.MemoryController">
+   <children>
+      <Button fx:id="btnStart" layoutX="274.0" layoutY="320.0" mnemonicParsing="false" style="visibility: hidden;" text="Start" />
+      <MenuButton fx:id="btnMode" layoutX="262.0" layoutY="236.0" mnemonicParsing="false" style="visibility: hidden;" text="Mode">
+        <items>
+          <MenuItem fx:id="modeLife" mnemonicParsing="false" onAction="#showStartBTN" text="Life" />
+          <MenuItem fx:id="modeTime" mnemonicParsing="false" onAction="#showStartBTN" text="Time" />
+        </items>
+      </MenuButton>
+      <Label layoutX="204.0" layoutY="14.0" text="Memory">
+         <font>
+            <Font size="52.0" />
+         </font>
+      </Label>
+      <GridPane layoutX="65.0" layoutY="100.0" prefHeight="95.0" prefWidth="482.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@memoryImages/c1.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+               <image>
+                  <Image url="@memoryImages/c2.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
+               <image>
+                  <Image url="@memoryImages/c3.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3">
+               <image>
+                  <Image url="@memoryImages/c4.jpg" />
+               </image>
+            </ImageView>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
