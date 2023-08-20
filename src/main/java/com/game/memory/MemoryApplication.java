@@ -1,7 +1,5 @@
 package com.game.memory;
 
-// prova commit
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
