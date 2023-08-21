@@ -14,11 +14,11 @@
 
 <AnchorPane fx:id="Anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.game.memory.MemoryController">
    <children>
-      <Button fx:id="btnStart" layoutX="274.0" layoutY="320.0" mnemonicParsing="false" onAction="#startGame" style="visibility: hidden;" text="Start" />
+      <Button fx:id="btnStart" layoutX="274.0" layoutY="320.0" mnemonicParsing="false" onAction="#sendData" style="visibility: hidden;" text="Start" />
       <MenuButton fx:id="btnMode" layoutX="262.0" layoutY="236.0" mnemonicParsing="false" style="visibility: hidden;" text="Mode">
         <items>
-          <MenuItem fx:id="modeLife" mnemonicParsing="false" onAction="#showStartBTN" text="Life" />
-          <MenuItem fx:id="modeTime" mnemonicParsing="false" onAction="#showStartBTN" text="Time" />
+          <MenuItem fx:id="modeLife" mnemonicParsing="false" onAction="#saveSelectionLife" text="Life" />
+          <MenuItem fx:id="modeTime" mnemonicParsing="false" onAction="#saveSelectionTime" text="Time" />
         </items>
       </MenuButton>
       <Label layoutX="204.0" layoutY="14.0" text="Memory">
@@ -37,22 +37,22 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPacman" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@memoryImages/c1.jpg" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+            <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPokemon" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                <image>
                   <Image url="@memoryImages/c2.jpg" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
+            <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSuperMario" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
                <image>
                   <Image url="@memoryImages/c3.jpg" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#showModeBTN" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3">
+            <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSpongebob" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3">
                <image>
                   <Image url="@memoryImages/c4.jpg" />
                </image>
