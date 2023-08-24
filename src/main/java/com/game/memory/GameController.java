@@ -9,11 +9,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.util.*;
+import java.util.random.RandomGenerator;
+
 public class GameController {
-    // 4 x 2    --> livello 1
-    // 4 x 3    --> livello 2
-    // 4 x 4    --> livello 3
-    // 4 x 5    --> livello 4
+    // 4 x 2    --> livello 1: 4 immagini
+    // 4 x 3    --> livello 2: 6
+    // 4 x 4    --> livello 3: 8
+    // 4 x 5    --> livello 4: 10
+
 
     @FXML
     private GridPane gridPane;
@@ -29,13 +33,31 @@ public class GameController {
 
     Game game;
 
+    private int level;
 
   @FXML
   public void initialize() {
       anchorPane.setStyle("-fx-background-color: blue;");
       gridPane.setGridLinesVisible(true);
 
+      //  ( liv x 2 + 2 ) x 2
       // creazione arrayList
+      // controllo sul livello per sapere quanti elementi conterrà l'array e quante righe aggiungere
+
+      ArrayList<Integer> cardCouples = new ArrayList<>();
+      HashSet<Integer> cards = new HashSet<>();
+      int length = level * 2 + 2;     // numero di carte diverse
+      RandomGenerator randomGenerator = RandomGenerator.getDefault();
+      for (int i = 0; i < length; ++i) {
+        cards.add(randomGenerator.nextInt(1, 11));
+      }
+
+      cardCouples.addAll(cards);
+      cardCouples.addAll(cards);
+
+      Collections.shuffle(cardCouples);
+
+      System.out.println(Arrays.toString(cardCouples.toArray()));
 
       gridPane.addRow(2, new Label(""));
 
@@ -45,6 +67,7 @@ public class GameController {
       lblTheme.textProperty().set("" + game.getTheme());
       lblMode.textProperty().set("" + game.getMode());
       lblLevel.textProperty().set("" + game.getLevel());
+      level = Integer.parseInt(lblLevel.getText());
   }
 
 
@@ -54,7 +77,5 @@ public class GameController {
         this.game = game;
         update();
     }
-
-
 
 }
