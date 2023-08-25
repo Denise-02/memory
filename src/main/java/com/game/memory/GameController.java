@@ -36,23 +36,31 @@ public class GameController {
     /**
      * The level of the game. For each level the number of cards increases.
      */
+
+    @FXML
     private int level;
+    @FXML
     private int mode;
+    @FXML
     private int theme;
 
-  @FXML
+
+    @FXML
   public void initialize() {
 
       anchorPane.setStyle("-fx-background-color: blue;");
       gridPane.setGridLinesVisible(true);
 
       //  ( liv x 2 + 2 ) x 2
-      // creazione arrayList
       // controllo sul livello per sapere quanti elementi conterrà l'array e quante righe aggiungere
+
+
 
       HashSet<Integer> cards = new HashSet<>();
       ArrayList<Integer> cardCouples = new ArrayList<>();
       System.out.println("The level is: " + level);
+      System.out.println("The theme is: " + theme);
+      System.out.println("The mode is: " + mode);
       int length = level * 2 + 2;     // numero di carte diverse
       RandomGenerator randomGenerator = RandomGenerator.getDefault();
 
@@ -75,27 +83,22 @@ public class GameController {
 
   }
 
+  @FXML
   void update() {
-      /*theme = game.getTheme();
+      theme = game.getTheme();
       mode = game.getMode();
-      level = game.getLevel() + 3; //QUESTO +3 SERVE PER ASSICURARMI CHE SIA USATO QUESTO VALORE
-      System.out.println("I say the level is: " + level);*/
+      level = game.getLevel();
+      System.out.println("I say the level is: " + level);
 
       lblTheme.textProperty().set("" + theme);
       lblMode.textProperty().set("" + mode);
       lblLevel.textProperty().set("" + level);
 
-      /* lblTheme.textProperty().set("" + game.getTheme());
-      lblMode.textProperty().set("" + game.getMode());
-      lblLevel.textProperty().set("" + game.getLevel());
-      level = Integer.parseInt(lblLevel.getText()); */
   }
-
-
 
   public Game getGame() { return game; }
   public void setGame(Game game) {
      this.game = game;
-     update();
+    // update();
   }
 }

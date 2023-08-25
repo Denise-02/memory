@@ -10,23 +10,18 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="Anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.game.memory.MemoryController">
    <children>
-      <Button fx:id="btnStart" layoutX="274.0" layoutY="320.0" mnemonicParsing="false" onAction="#sendData" style="visibility: hidden;" text="Start" />
-      <MenuButton fx:id="btnMode" layoutX="262.0" layoutY="236.0" mnemonicParsing="false" style="visibility: hidden;" text="Mode">
-        <items>
-          <MenuItem fx:id="modeLife" mnemonicParsing="false" onAction="#saveSelectionLife" text="Life" />
-          <MenuItem fx:id="modeTime" mnemonicParsing="false" onAction="#saveSelectionTime" text="Time" />
-        </items>
-      </MenuButton>
-      <Label layoutX="204.0" layoutY="14.0" text="Memory">
+       <VBox alignment="TOP_CENTER" layoutX="-1.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="1.0">
+      <Label alignment="TOP_CENTER" contentDisplay="CENTER" layoutX="204.0" layoutY="14.0" prefHeight="80.0" prefWidth="599.0" text="Memory">
          <font>
             <Font size="52.0" />
          </font>
       </Label>
-      <GridPane layoutX="65.0" layoutY="100.0" prefHeight="95.0" prefWidth="482.0">
+      <GridPane alignment="TOP_CENTER" layoutX="65.0" layoutY="100.0" prefHeight="95.0" prefWidth="482.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -37,27 +32,35 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPacman" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPacman" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
                   <Image url="@memoryImages/c1.jpg" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPokemon" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+            <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPokemon" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
                   <Image url="@memoryImages/c2.jpg" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSuperMario" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
+            <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSuperMario" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
                   <Image url="@memoryImages/c3.jpg" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSpongebob" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3">
+            <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSpongebob" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
                   <Image url="@memoryImages/c4.jpg" />
                </image>
             </ImageView>
          </children>
       </GridPane>
+      <MenuButton fx:id="btnMode" mnemonicParsing="false" prefHeight="36.0" prefWidth="130.0" style="visibility: hidden;" text="Mode">
+        <items>
+          <MenuItem fx:id="modeLife" mnemonicParsing="false" onAction="#saveSelectionLife" text="Life" />
+          <MenuItem fx:id="modeTime" mnemonicParsing="false" onAction="#saveSelectionTime" text="Time" />
+        </items>
+      </MenuButton>
+      <Button fx:id="btnStart" mnemonicParsing="false" onAction="#sendData" prefHeight="40.0" prefWidth="131.0" style="visibility: hidden;" text="Start" />
+       </VBox>
    </children>
 </AnchorPane>

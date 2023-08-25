@@ -5,10 +5,11 @@ public class Game {
     private int mode;        // modalità: vite (1) o tempo (2)
     private int level;
 
+
     public Game(int theme, int mode) {
         this.theme = theme;
         this.mode = mode;
-        level = 0;
+        level = 1;
     }
 
     public Game(int theme, int mode, int level) {

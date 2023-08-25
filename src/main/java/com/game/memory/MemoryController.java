@@ -6,10 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -27,8 +24,6 @@ public class MemoryController {
     @FXML
     private Button btnStart;
 
-
-// per controlli dentro a showStartBTN
     @FXML
     private ImageView imgPacman;
 
@@ -39,6 +34,13 @@ public class MemoryController {
     private ImageView imgSpongebob;
     @FXML
     private ImageView imgSuperMario;
+
+    @FXML
+    private MenuItem modeTime;
+
+    @FXML
+    private MenuItem modeLife;
+
     Game game;
 
     private int theme;
@@ -79,14 +81,14 @@ public class MemoryController {
     @FXML
     public void saveSelectionLife(ActionEvent actionEvent) {
         mode = 1;
-        btnMode.setText("Lives");
+        btnMode.setText(modeLife.getText());
         showStartBTN();
     }
 
     @FXML
     public void saveSelectionTime(ActionEvent actionEvent) {
         mode = 2;
-        btnMode.setText("Time");
+        btnMode.setText(modeTime.getText());
         showStartBTN();
     }
 
@@ -105,19 +107,19 @@ public class MemoryController {
         // cambio view
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("game-view.fxml"));
-            Parent root1 = (Parent) fxmlLoader.load();
+            Parent root1 = (Parent) fxmlLoader.load();      // da cambiare nome a root1
             stage = new Stage();
             stage.setUserData(game);
             stage.setScene(new Scene(root1));
             stage.show();
-
 
             GameController controller = fxmlLoader.getController();
 
             /**
              * Set the game modalities into the GameController
              */
-            controller.setGame(new Game(theme, mode));
+            controller.setGame(game);
+            controller.update();
 
         } catch (IOException e) {
             e.printStackTrace();
