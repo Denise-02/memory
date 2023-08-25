@@ -79,12 +79,14 @@ public class MemoryController {
     @FXML
     public void saveSelectionLife(ActionEvent actionEvent) {
         mode = 1;
+        btnMode.setText("Lives");
         showStartBTN();
     }
 
     @FXML
     public void saveSelectionTime(ActionEvent actionEvent) {
         mode = 2;
+        btnMode.setText("Time");
         showStartBTN();
     }
 
@@ -112,7 +114,9 @@ public class MemoryController {
 
             GameController controller = fxmlLoader.getController();
 
-            // Set an empty person into the controller
+            /**
+             * Set the game modalities into the GameController
+             */
             controller.setGame(new Game(theme, mode));
 
         } catch (IOException e) {
