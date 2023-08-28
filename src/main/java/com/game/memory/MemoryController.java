@@ -3,20 +3,31 @@ package com.game.memory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
+import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 
-public class MemoryController {
+import java.net.*;
+
+public class MemoryController { //implements Initializable {
 
     @FXML
     private MenuButton btnMode;
@@ -41,10 +52,71 @@ public class MemoryController {
     @FXML
     private MenuItem modeLife;
 
+    @FXML private AnchorPane Anchor;
+
+    @FXML private Label lblProva;
+
+
     Game game;
 
     private int theme;
     private int mode;
+
+
+    @FXML
+    private ResourceBundle resources;
+
+    @FXML
+    private URL location;
+
+
+    /**
+     * Initializes the controller class. This method is automatically called after the fxml file has been loaded.
+     */
+
+    //@Override
+    @FXML
+    public void initialize() {
+ //   imgPacman.setImage(new Image("src/main/resources/com/game/memory/memoryImages/c1.png"));
+        //imgPacman.setImage("memoryImages/c1.png");
+     //   imgPacman = imgPacman;
+     //   Path imageFile = (Path) Paths.get("/src/main/resources/com/game/memory/memoryImages/c1.png");
+       // src/main/resources/com/game/memory/memoryImages/c1.png
+/*        URL url = null;
+        try {
+            url = new URL("/c1.png");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }*/
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+ //       System.out.println("url = " + imageFile);
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  //      imgPacman.setImage(new Image(url.toURI().toURL().toExternalForm()));
+
+
+//@memoryImages/c1.png
+
+ //       String url = "file:///Users/denis/OneDrive/Desktop/JPImages/JPImages/Stella.png";   // QUESTO VA! --> OK
+    //    String url = "file:///c1.png";
+  //      boolean backgroundLoading = true;
+
+// The image is being loaded in the background
+ //       imgPacman.setImage(new Image(url, backgroundLoading));
+
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c1.jpg")));
+        imgPacman.setImage(image);
+
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c2.jpg")));
+        imgPokemon.setImage(image);
+
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c3.jpg")));
+        imgSuperMario.setImage(image);
+
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c4.jpg")));
+        imgSpongebob.setImage(image);
+    }
+
+
 
     public void showModeBTN() {
         btnMode.setStyle("-fx-visibitily: visible");

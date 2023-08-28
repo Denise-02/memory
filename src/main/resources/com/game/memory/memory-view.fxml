@@ -21,7 +21,7 @@
             <Font size="52.0" />
          </font>
       </Label>
-      <GridPane alignment="TOP_CENTER" layoutX="65.0" layoutY="100.0" prefHeight="95.0" prefWidth="482.0">
+      <GridPane fx:id="gridPane" alignment="TOP_CENTER" layoutX="65.0" layoutY="100.0" prefHeight="95.0" prefWidth="482.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -34,22 +34,22 @@
          <children>
             <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPacman" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@memoryImages/c1.jpg" />
+              <!--    <Image url="@memoryImages/c1.png" />  -->
                </image>
             </ImageView>
             <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionPokemon" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@memoryImages/c2.jpg" />
+       <!--           <Image url="@memoryImages/c2.jpg" /> -->
                </image>
             </ImageView>
             <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSuperMario" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@memoryImages/c3.jpg" />
+                   <!--    <Image url="@memoryImages/c3.jpg" /> -->
                </image>
             </ImageView>
             <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" onMouseClicked="#saveSelectionSpongebob" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@memoryImages/c4.jpg" />
+                   <!--    <Image url="@memoryImages/c4.jpg" /> -->
                </image>
             </ImageView>
          </children>
@@ -61,6 +61,7 @@
         </items>
       </MenuButton>
       <Button fx:id="btnStart" mnemonicParsing="false" onAction="#sendData" prefHeight="40.0" prefWidth="131.0" style="visibility: hidden;" text="Start" />
+         <Label fx:id="lblProva" text="Label" />
        </VBox>
    </children>
 </AnchorPane>
