@@ -1,33 +1,25 @@
 package com.game.memory;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
-import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
-import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 
-import java.net.*;
 
-public class MemoryController { //implements Initializable {
+public class MemoryController {
 
     @FXML
     private MenuButton btnMode;
@@ -52,9 +44,8 @@ public class MemoryController { //implements Initializable {
     @FXML
     private MenuItem modeLife;
 
-    @FXML private AnchorPane Anchor;
-
-    @FXML private Label lblProva;
+    @FXML
+    private GridPane gridPane;
 
 
     Game game;
@@ -62,46 +53,14 @@ public class MemoryController { //implements Initializable {
     private int theme;
     private int mode;
 
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
-
     /**
      * Initializes the controller class. This method is automatically called after the fxml file has been loaded.
      */
 
-    //@Override
     @FXML
     public void initialize() {
- //   imgPacman.setImage(new Image("src/main/resources/com/game/memory/memoryImages/c1.png"));
-        //imgPacman.setImage("memoryImages/c1.png");
-     //   imgPacman = imgPacman;
-     //   Path imageFile = (Path) Paths.get("/src/main/resources/com/game/memory/memoryImages/c1.png");
-       // src/main/resources/com/game/memory/memoryImages/c1.png
-/*        URL url = null;
-        try {
-            url = new URL("/c1.png");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }*/
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
- //       System.out.println("url = " + imageFile);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-  //      imgPacman.setImage(new Image(url.toURI().toURL().toExternalForm()));
-
-
-//@memoryImages/c1.png
-
- //       String url = "file:///Users/denis/OneDrive/Desktop/JPImages/JPImages/Stella.png";   // QUESTO VA! --> OK
-    //    String url = "file:///c1.png";
-  //      boolean backgroundLoading = true;
-
-// The image is being loaded in the background
- //       imgPacman.setImage(new Image(url, backgroundLoading));
+        btnMode.setVisible(false);
+        btnStart.setVisible(false);
 
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c1.jpg")));
         imgPacman.setImage(image);
@@ -114,57 +73,71 @@ public class MemoryController { //implements Initializable {
 
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c4.jpg")));
         imgSpongebob.setImage(image);
+
+        gameSettings();
+
     }
 
+    private void gameSettings() {
 
+        gridPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                btnMode.setVisible(true);
+            }
+        });
 
-    public void showModeBTN() {
-        btnMode.setStyle("-fx-visibitily: visible");
+        imgPacman.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                theme = 1;
+                btnMode.setVisible(true);
+            }
+        });
+
+        imgPokemon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                theme = 2;
+            }
+        });
+
+        imgSuperMario.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                theme = 3;
+            }
+        });
+
+        imgSpongebob.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                theme = 4;
+            }
+        });
+
+        modeLife.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                btnMode.setText(modeLife.getText());
+                btnStart.setVisible(true);
+            }
+        });
+
+        modeTime.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                btnMode.setText(modeTime.getText());
+                btnStart.setVisible(true);
+            }
+        });
+
+        mode = btnMode.getText().compareTo("Life") == 0 ? 1 : 2;    // life = 1, time = 2
+
+   //     game = new Game(theme, mode);
     }
 
-    @FXML
-    public void saveSelectionPacman(MouseEvent mouseEvent) {
-        theme = 1;
-        showModeBTN();
-    }
-
-    @FXML
-    public void saveSelectionPokemon(MouseEvent mouseEvent) {
-        theme = 2;
-        showModeBTN();
-    }
-
-    @FXML
-    public void saveSelectionSuperMario(MouseEvent mouseEvent) {
-        theme = 3;
-        showModeBTN();
-    }
-
-    @FXML
-    public void saveSelectionSpongebob(MouseEvent mouseEvent) {
-        theme = 4;
-        showModeBTN();
-    }
-
-    public void showStartBTN() {
-        btnStart.setStyle("-fx-visibitily: visible");
-    }
-
-    @FXML
-    public void saveSelectionLife(ActionEvent actionEvent) {
-        mode = 1;
-        btnMode.setText(modeLife.getText());
-        showStartBTN();
-    }
-
-    @FXML
-    public void saveSelectionTime(ActionEvent actionEvent) {
-        mode = 2;
-        btnMode.setText(modeTime.getText());
-        showStartBTN();
-    }
-
-    @FXML
+ /*   @FXML
     public void sendData(ActionEvent actionEvent) throws IOException {     // startGame
         //  invio dati al GameController
             // Step 1
@@ -189,7 +162,7 @@ public class MemoryController { //implements Initializable {
 
             /**
              * Set the game modalities into the GameController
-             */
+
             controller.setGame(game);
             controller.update();
 
@@ -198,8 +171,29 @@ public class MemoryController { //implements Initializable {
         }
     }
 
-
-
-
+        */
+ @FXML
+ private void sendData(MouseEvent event) {
+     // Step 1
+     game = new Game(theme,mode,1);
+     // Step 2
+     Node node = (Node) event.getSource();
+     // Step 3
+     Stage stage = (Stage) node.getScene().getWindow();
+     stage.close();
+     try {
+         // Step 4
+         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("game-view.fxml")));
+         // Step 5
+         stage.setUserData(game);
+         // Step 6
+         Scene scene = new Scene(root);
+         stage.setScene(scene);
+         // Step 7
+         stage.show();
+     } catch (IOException e) {
+         System.err.println(String.format("Error: %s", e.getMessage()));
+     }
+ }
 
 }

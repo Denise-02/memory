@@ -1,7 +1,10 @@
 package com.game.memory;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -11,6 +14,14 @@ import javafx.stage.Stage;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
+
+/* https://www.datainfinities.com/27/pass-event-and-parameter-onclick-in-react#:~:text=To%20pass%20event%20and%20parameter%20onClick%20in%20React%2C%20declare%20an,an%20element(eg%20button).
+* How do you pass an event as a parameter?
+* To pass event and parameter onClick in React, declare an event handler
+* function and then pass it to the onClick prop of the element inside an inline arrow
+* function. Using React onClick event handler you can call a function and trigger an
+* action when a user clicks an element(eg button).
+* */
 
 public class GameController {
     // 4 x 2    --> livello 1: 4 immagini
@@ -37,16 +48,27 @@ public class GameController {
      * The level of the game. For each level the number of cards increases.
      */
 
-    @FXML
+   // @FXML
     private int level;
-    @FXML
+   // @FXML
     private int mode;
-    @FXML
+  //  @FXML
     private int theme;
+
+   // @FXML private Button btnReceive;
+
 
 
     @FXML
   public void initialize() {
+        game = new Game(1,1,1);
+
+        anchorPane.setStyle("fx-background-color: pink");
+   // btnReceive = new Button();
+
+     //   receiveData(new MouseEvent(onAction)));
+
+
 
       anchorPane.setStyle("-fx-background-color: blue;");
       gridPane.setGridLinesVisible(true);
@@ -72,6 +94,7 @@ public class GameController {
           }
       }
 
+
       cardCouples.addAll(cards);
       cardCouples.addAll(cards);
 
@@ -82,6 +105,20 @@ public class GameController {
       gridPane.addRow(1, new Label("New line"));
 
   }
+
+    @FXML
+    private void receiveData(MouseEvent event) {
+        // Step 1
+        Node node = (Node) event.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        // Step 2
+        game = (Game) stage.getUserData();
+        // Step 3
+        theme = game.getTheme();
+        mode = game.getMode();
+        level = game.getLevel();
+    }
+
 
   @FXML
   void update() {

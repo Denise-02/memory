@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.game.memory.GameController">
+<AnchorPane fx:id="anchorPane" onMouseClicked="#receiveData" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.game.memory.GameController">
    <children>
       <GridPane fx:id="gridPane" layoutX="86.0" layoutY="140.0" prefHeight="102.0" prefWidth="455.0">
         <columnConstraints>
