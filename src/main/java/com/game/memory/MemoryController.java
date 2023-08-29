@@ -14,8 +14,10 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -188,11 +190,48 @@ public class MemoryController {
          stage.setUserData(game);
          // Step 6
          Scene scene = new Scene(root);
+         stage.setTitle("Memory");
          stage.setScene(scene);
          // Step 7
          stage.show();
      } catch (IOException e) {
          System.err.println(String.format("Error: %s", e.getMessage()));
+     }
+ }
+
+ @FXML
+ private void sendProva(MouseEvent event) {
+     game = new Game(theme,mode,1);
+
+     try {
+         FXMLLoader loader = new FXMLLoader();
+         loader.setLocation(getClass().getResource("game-view.fxml"));
+         DialogPane view = loader.load();
+         GameController controller = loader.getController();
+// Set the person into the controller.
+         controller.receiveData(theme, mode, 1);
+// Create the dialog
+         Dialog<ButtonType> dialog = new Dialog<>();
+         dialog.setTitle("Memory");
+         dialog.initModality(Modality.WINDOW_MODAL);
+         dialog.setDialogPane(view);
+
+         Node node = (Node) event.getSource();
+         Stage stage = (Stage) node.getScene().getWindow();
+         stage.close();     // fa chiudere la schermata del menu
+
+         Optional<ButtonType> clickedButton = dialog.showAndWait();
+
+         /*
+
+         Scene scene = new Scene(view);
+         stage.setTitle("Memory");
+         stage.setScene(scene);
+*/
+
+
+ } catch (IOException e) {
+         throw new RuntimeException(e);
      }
  }
 
