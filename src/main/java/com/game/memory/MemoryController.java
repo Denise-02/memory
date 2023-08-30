@@ -93,7 +93,6 @@ public class MemoryController {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 theme = "PacMan";
-                btnMode.setVisible(true);
             }
         });
 
