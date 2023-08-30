@@ -55,7 +55,7 @@ public class MemoryController {
     private String theme;
     private int mode;
 
-    /**
+    /** c
      * Initializes the controller class. This method is automatically called after the fxml file has been loaded.
      */
 

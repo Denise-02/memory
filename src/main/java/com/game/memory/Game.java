@@ -1,7 +1,7 @@
 package com.game.memory;
 
 public class Game {
-    private String theme;        // variabile per il tema delle carte
+    private String theme;        // variabile per il tema delle carte d
     private int mode;        // modalità: vite (1) o tempo (2)
     private int level;
 

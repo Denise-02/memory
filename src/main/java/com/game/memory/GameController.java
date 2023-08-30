@@ -132,7 +132,7 @@ public class GameController {
         }
 
         int count = 0;
-        for (int cols = 0; cols < 4; ++cols) {    // 4 costante
+        for (int cols = 0; cols < 4; ++cols) {    // 4 costante e
           for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
                 System.out.println("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
                 Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), 200, 200, true, true);
@@ -144,7 +144,7 @@ public class GameController {
 
           }
         }
-/*
+/* a
         // timer
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
