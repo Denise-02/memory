@@ -1,5 +1,6 @@
 package com.game.memory;
 
+import javafx.animation.AnimationTimer;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,11 +10,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -47,20 +50,22 @@ public class GameController {
 
     @FXML private HBox hBox;
 
-    /**
-     * The level of the game. For each level the number of cards increases.
-     */
+
 
     @FXML private ImageView imageView;
 
-    private int level;
-    private int mode;
-    private int theme;
 
+    private String theme;
+    private int mode;
+    private int level;
+
+    /**
+     * The level of the game. For each level the number of cards increases.
+     */
     @FXML
     public void initialize() {
-        game = new Game(1, 1, 1);
-        gridPane.setGridLinesVisible(true);
+        game = new Game("", 1, 1);
+     //   gridPane.setGridLinesVisible(true);
         anchorPane = new AnchorPane();
         anchorPane.setStyle("fx-background-color: pink");
 /*
@@ -70,7 +75,7 @@ public class GameController {
 */
 
     }
-    public void receiveData(int theme, int mode, int level) {
+    public void receiveData(String theme, int mode, int level) {
         game.setTheme(theme);
         game.setMode(mode);
         game.setLevel(level);
@@ -88,7 +93,7 @@ public class GameController {
         lblTheme.textProperty().set("" + theme);
         lblMode.textProperty().set("" + mode);
         lblLevel.textProperty().set("" + level);
-        prova();
+
         initializeGame();
     }
 
@@ -103,7 +108,7 @@ public class GameController {
         System.out.println("The level is: " + game.getLevel());
         System.out.println("The theme is: " + game.getTheme());
         System.out.println("The mode is: " + game.getMode());
-        int length = 3 * 2 + 2;     // numero di carte diverse
+        int length = game.getLevel() * 2 + 2;     // numero di carte diverse
         RandomGenerator randomGenerator = RandomGenerator.getDefault();
 
         System.out.println("The length is: " + length);
@@ -120,19 +125,37 @@ public class GameController {
         Collections.shuffle(cardCouples);
 
         System.out.println(Arrays.toString(cardCouples.toArray()));
-        for (int i = 1; i <= 3; ++i) {
-            gridPane.addRow(i, new Label("New line"));
+        for (int i = 1; i <= game.getLevel(); ++i) {
+            StackPane stackPane = new StackPane();
+            stackPane.setStyle("fx-background-color: green");
+            gridPane.addRow(i, new StackPane(), new StackPane(), new StackPane(), new StackPane());
         }
 
+        int count = 0;
+        for (int cols = 0; cols < 4; ++cols) {    // 4 costante
+          for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
+                System.out.println("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
+                Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), 200, 200, true, true);
+                ImageView imageView1 = new ImageView();
+                imageView1.setImage(image);
+
+                gridPane.add(imageView1, cols, rows);
+              ++count;
+
+          }
+        }
+/*
+        // timer
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+
+            }
+        }
+*/
 
     }
-  private void prova() {
-        System.out.println(game.getTheme());
-
-
-    }
-
-
 
   public Game getGame() { return game; }
   public void setGame(Game game) {

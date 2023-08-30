@@ -52,7 +52,7 @@ public class MemoryController {
 
     Game game;
 
-    private int theme;
+    private String theme;
     private int mode;
 
     /**
@@ -92,7 +92,7 @@ public class MemoryController {
         imgPacman.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                theme = 1;
+                theme = "PacMan";
                 btnMode.setVisible(true);
             }
         });
@@ -100,21 +100,21 @@ public class MemoryController {
         imgPokemon.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                theme = 2;
+                theme = "Pokemon";
             }
         });
 
         imgSuperMario.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                theme = 3;
+                theme = "SuperMario";
             }
         });
 
         imgSpongebob.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                theme = 4;
+                theme = "Spongebob";
             }
         });
 
