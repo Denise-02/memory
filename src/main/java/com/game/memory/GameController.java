@@ -1,10 +1,13 @@
 package com.game.memory;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.util.*;
@@ -36,6 +39,8 @@ public class GameController {
     Game game;
 
     private final int NCOLS = 4;
+
+    private int checked = 0;    // numero di coppie trovate
 
     /**
      * The level of the game. For each level the number of cards increases.
@@ -123,11 +128,10 @@ public class GameController {
         for (int cols = 0; cols < NCOLS; ++cols) {
             for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
                 //     gridPane.getRowConstraints().add(rowConstraints);
-                System.out.println("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
+    //            System.out.println("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
                 Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), 90, 90, true, true);
                 ImageView imageView1 = new ImageView();
                 imageView1.setImage(image);
-
                 gridPane.add(imageView1, cols, rows);
                 GridPane.setHalignment(imageView1, HPos.CENTER);
 
@@ -136,29 +140,8 @@ public class GameController {
             }
 
         }
-  /*    GridPane.setFillHeight(gridPane, true);
-      GridPane.setFillWidth(gridPane, true);
-*/
-        // gridPane.getChildren().
-    /*    double gridHeight = gridPane.getHeight();
-        System.out.println("gridHeight" + gridHeight);
-        double gridWidth = gridPane.getWidth();
-      System.out.println("gridWidth" + gridWidth);*/
-        //  gridPane.setPrefHeight(gridWidth);
-        //   gridPane.getRowConstraints().add(new RowConstraints(gridWidth / (game.getLevel() + 1))); // column 1 is 200 wide
 
-
-
-/* a
-        // timer
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        }
-*/
+        startGame(cardCouples);
 
     }
 /*
@@ -169,4 +152,62 @@ public class GameController {
   }
   */
 
+    private void startGame(ArrayList<Integer> cardCouples) {
+        ArrayList<Integer> index = new ArrayList<>();
+            gridPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {                  // quando viene cliccato la carta deve essere resa visibile
+                    index.add(indexCard(event));
+                    System.out.println("Stampa array da handle: " + Arrays.toString(index.toArray()));
+                    if (index.size() == 2) {
+                        gridPane.mouseTransparentProperty();
+                        checkCoupleSelected(cardCouples, index);
+                    }
+                }
+
+            });
+
+
+    }
+
+    private void saveFirstIndex(int index) {
+
+    }
+
+    @FXML
+    private void checkCoupleSelected(ArrayList<Integer> cardCouples, ArrayList<Integer> index) {
+        System.out.println("Stampa array da funzione: " + Arrays.toString(index.toArray()));
+
+    }
+// nr * NCOLS + nc = indice array
+    //   1 * 4 + 3 = 7
+
+
+    @FXML
+    private int indexCard(MouseEvent e) {       // ritorna l'indice nell'array della carta selezionata, calcolato con la formula nr * NCOLS + nc
+  /*      Node source = (Node) e.getSource();
+
+        Integer colIndex = GridPane.getColumnIndex((Node) e.getTarget());
+
+        Integer rowIndex = GridPane.getRowIndex((Node) e.getTarget());
+
+        System.out.printf("Mouse entered cell [%d, %d]%n", colIndex, rowIndex);
+*/
+
+
+        Node clickedNode = e.getPickResult().getIntersectedNode();
+        Integer colIndex = GridPane.getColumnIndex(clickedNode);
+        Integer rowIndex = GridPane.getRowIndex(clickedNode);
+    //    System.out.printf("Mouse entered cell [%d, %d]%n", colIndex, rowIndex);
+
+
+
+        return rowIndex * NCOLS + colIndex;
+    }
+
+
 }
+
+
+
+
