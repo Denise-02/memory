@@ -42,17 +42,17 @@
             </ImageView>
             <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-       <!--           <Image url="@memoryImages/c2.jpg" /> -->
+       <!--           <Image url="@memoryImages/cPokemon.jpg" /> -->
                </image>
             </ImageView>
             <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-                   <!--    <Image url="@memoryImages/c3.jpg" /> -->
+                   <!--    <Image url="@memoryImages/cSuperMario.jpg" /> -->
                </image>
             </ImageView>
             <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
-                   <!--    <Image url="@memoryImages/c4.jpg" /> -->
+                   <!--    <Image url="@memoryImages/cSpongebob.jpg" /> -->
                </image>
             </ImageView>
          </children>

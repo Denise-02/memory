@@ -64,16 +64,16 @@ public class MemoryController {
         btnMode.setVisible(false);
         btnStart.setVisible(false);
 
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c1.jpg")));
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/cPacMan.jpg")));
         imgPacman.setImage(image);
 
-        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c2.jpg")));
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/cPokemon.jpg")));
         imgPokemon.setImage(image);
 
-        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c3.jpg")));
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/cSuperMario.jpg")));
         imgSuperMario.setImage(image);
 
-        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c4.jpg")));
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/cSpongebob.jpg")));
         imgSpongebob.setImage(image);
 
         gameSettings();
