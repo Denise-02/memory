@@ -1,8 +1,13 @@
 package com.game.memory;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -42,6 +47,9 @@ public class GameController {
 
     private int checked = 0;    // numero di coppie trovate
 
+
+    private Node[][] gridPaneArray = null;
+
     /**
      * The level of the game. For each level the number of cards increases.
      */
@@ -76,9 +84,6 @@ public class GameController {
 
     @FXML
     private void initializeGame() {
-        //  ( liv x 2 + 2 ) x 2
-        // controllo sul livello per sapere quanti elementi conterrà l'array e quante righe aggiungere
-        //  game.setLevel(4);
         HashSet<Integer> cards = new HashSet<>();
         ArrayList<Integer> cardCouples = new ArrayList<>();
         System.out.println("The level is: " + game.getLevel());
@@ -104,9 +109,8 @@ public class GameController {
 
         System.out.println("stampa dopo shuffle " + Arrays.toString(cardCouples.toArray()));
         for (int i = 1; i <= game.getLevel(); ++i) {
-            StackPane stackPane = new StackPane();
-            stackPane.setStyle("fx-background-color: green");
-            gridPane.addRow(i, new StackPane(), new StackPane(), new StackPane(), new StackPane());
+
+            gridPane.addRow(i, new ImageView(), new ImageView(), new ImageView(), new ImageView());
         }
 
         RowConstraints rowConstraints = new RowConstraints();
@@ -115,6 +119,7 @@ public class GameController {
         rowConstraints.minHeightProperty().set(10.0);
         rowConstraints.prefHeightProperty().set(30.0);
 
+/*
         int count = 0;
         for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
             for (int cols = 0; cols < NCOLS; ++cols) {
@@ -122,13 +127,32 @@ public class GameController {
                 ++count;
             }
         }
+*/
+/*
+        Timer myTimer = new Timer();
+        myTimer.schedule(new TimerTask(){
 
+       //     @Override
+            public void run() {
+                System.out.println("mostro carte");
+                int count = 0;
+                for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
+                    for (int cols = 0; cols < NCOLS; ++cols) {
+                        showImages(cardCouples, cols, rows, count);
+                        ++count;
+                    }
+                }
 
+            }
+        }, 0);
+*/
         for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
             for (int cols = 0; cols < NCOLS; ++cols) {
                 coverImages(cols, rows);
             }
         }
+
+  //      initializeGridPaneArray();
 
         int checked = 0;
         while (checked != length / 2) {
@@ -140,31 +164,44 @@ public class GameController {
 
     private void startGame(ArrayList<Integer> cardCouples) {
         ArrayList<Integer> indexList = new ArrayList<>();
-        ArrayList<Integer> colRowIndex = new ArrayList<>();
-        int count = 0;
+        int count = 0;      // numero di carte cliccate
         int[] index = new int[1];
-        boolean ris = false;
-        //   if (count != 2 && !ris) {
-        gridPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {                  // quando viene cliccato la carta deve essere resa visibile
-                index[0] = (indexCard(event));
-                System.out.println("index = " + index[0]);
-                showImages(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
-                indexList.add(index[0]);
-                System.out.println("size = " + indexList.size());
-                System.out.println("Stampa array da handle: " + Arrays.toString(indexList.toArray()));
-                if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
-                    //     gridPane.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
-                    if (checkCoupleSelected(cardCouples, indexList)) {
-                        return;
+        final boolean[] ris = {false};
+     //   if (!ris[0]) {      // se non sono state cliccate 2 carte o le due carte sono diverse
+
+            gridPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {                  // quando viene cliccato la carta deve essere resa visibile
+                    index[0] = (indexCard(event));
+                    System.out.println("index = " + index[0]);
+
+                    showImages(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
+                    indexList.add(index[0]);
+                    System.out.println("size = " + indexList.size());
+                    System.out.println("Stampa array da handle: " + Arrays.toString(indexList.toArray()));
+                    if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
+                //        gridPane.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
+                        ris[0] = checkCoupleSelected(cardCouples, indexList);
+
+                        if (!ris[0]) {
+                            System.out.println("entro nell'if!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        } else {
+                            System.out.println("%n%n*********************************************************************************");
+                            Node n = getNodeFromGridPane(gridPane, indexList.get(0) % NCOLS, indexList.get(0) / NCOLS);
+                            System.out.println("trovato nodo 0: " + n);
+                            assert n != null;
+                            disableNode(n);
+
+                            n = getNodeFromGridPane(gridPane, indexList.get(0) % NCOLS, indexList.get(0) / NCOLS);
+                            disableNode(n);
+                        }
+                        indexList.clear();
                     }
                 }
-            }
 
-        });
-        ++count;
-    }
+            });
+            ++count;
+        }
 
 
     @FXML
@@ -172,9 +209,25 @@ public class GameController {
         System.out.println("Stampa array da funzione: " + Arrays.toString(index.toArray()));
         if (Objects.equals(cardCouples.get(index.get(0)), cardCouples.get(index.get(1)))) {
             System.out.printf("uguali [%d][%d]", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
+
+            System.out.println("%n%n*********************************************************************************");
+            Node n = getNodeFromGridPane(gridPane, index.get(0) % NCOLS, index.get(0) / NCOLS);
+            assert n != null;
+            disableNode(n);
+
+            n = getNodeFromGridPane(gridPane, index.get(1) % NCOLS, index.get(1) / NCOLS);
+            assert n != null;
+            disableNode(n);
+
+
+            System.out.println("*********************************************************************************%n%n");
             return true;    // vanno rese non cliccabili
         } else {
             System.out.printf("diversi [%d][%d]", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
+            // da aggiungere delay!!
+            coverImages(index.get(0) % NCOLS, index.get(0) / NCOLS);
+            coverImages(index.get(1) % NCOLS, index.get(1) / NCOLS);
+
         }
         return false;
     }
@@ -209,9 +262,45 @@ public class GameController {
         imageView1.setImage(image);
         gridPane.add(imageView1, cols, rows);
         GridPane.setHalignment(imageView1, HPos.CENTER);
+    }
 
+    private void initializeGridPaneArray()
+    {
+        this.gridPaneArray = new Node[game.getLevel() + 1][NCOLS];
+        System.out.println("%n%n*********************************************************************************");
+        for(Node node : this.gridPane.getChildren())
+        {
+
+       //     this.gridPaneArray[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = node;
+            System.out.println("node = " + node);
+        }
+        System.out.println("*********************************************************************************%n%n");
+    }
+
+
+    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+        for (Node node : gridPane.getChildren())
+            if (GridPane.getColumnIndex(node) != null
+                    && GridPane.getColumnIndex(node) != null
+                    && GridPane.getRowIndex(node) == row
+                    && GridPane.getColumnIndex(node) == col)
+                return node;
+        return null;
+    }
+
+    private void disableNode(Node node) {
+        assert node != null;
+        System.out.println("DISATTIVO NODO" + node);
+        node.setDisable(true);
+        node.disableProperty();
+        node.disabledProperty();
+        node.setStyle("pointer-events: none");
+        node.autosize();
+        node.setStyle("border-style: solid; border-color: red;");
+       // node.cursorProperty().removeListener((ChangeListener<? super Cursor>) this);
 
     }
+
 
 }
 
