@@ -1,22 +1,25 @@
 package com.game.memory;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
+
+import static java.lang.Thread.sleep;
 
 /* https://www.datainfinities.com/27/pass-event-and-parameter-onclick-in-react#:~:text=To%20pass%20event%20and%20parameter%20onClick%20in%20React%2C%20declare%20an,an%20element(eg%20button).
  * How do you pass an event as a parameter?
@@ -40,6 +43,8 @@ public class GameController {
     private Label lblMode;
     @FXML
     private Label lblLevel;
+    @FXML
+    private Button btnStart;
 
     Game game;
 
@@ -57,15 +62,9 @@ public class GameController {
     public void initialize() {
         game = new Game("", 1, 1);
         gridPane.setGridLinesVisible(true);
-/*
-        hBox = new HBox(15);
-        hBox.setPadding(new Insets(50, 150, 50, 60));
-        hBox.getChildren().addAll(gridPane, lblTheme, lblMode, lblLevel);
-*/
-
     }
 
-    public void receiveData(String theme, int mode, int level) {
+    public void receiveData(String theme, int mode, int level) throws InterruptedException {
         game.setTheme(theme);
         game.setMode(mode);
         game.setLevel(level);
@@ -74,16 +73,16 @@ public class GameController {
     }
 
     @FXML
-    void update() {
+    void update() throws InterruptedException {
         lblTheme.textProperty().set("" + game.getTheme());
         lblMode.textProperty().set("" + game.getMode());
         lblLevel.textProperty().set("" + game.getLevel());
-
+        btnStart.setVisible(true);
         initializeGame();
     }
 
     @FXML
-    private void initializeGame() {
+    private void initializeGame() throws InterruptedException {
         HashSet<Integer> cards = new HashSet<>();
         ArrayList<Integer> cardCouples = new ArrayList<>();
         System.out.println("The level is: " + game.getLevel());
@@ -119,115 +118,120 @@ public class GameController {
         rowConstraints.minHeightProperty().set(10.0);
         rowConstraints.prefHeightProperty().set(30.0);
 
-/*
+        gridPane.setVisible(false);
+
         int count = 0;
         for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
             for (int cols = 0; cols < NCOLS; ++cols) {
-                showImages(cardCouples, cols, rows, count);
+                showImage(cardCouples, cols, rows, count);
                 ++count;
             }
         }
-*/
-/*
-        Timer myTimer = new Timer();
-        myTimer.schedule(new TimerTask(){
+        btnStart.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                gridPane.setVisible(true);
+                btnStart.setVisible(false);
 
-       //     @Override
-            public void run() {
-                System.out.println("mostro carte");
-                int count = 0;
-                for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
-                    for (int cols = 0; cols < NCOLS; ++cols) {
-                        showImages(cardCouples, cols, rows, count);
-                        ++count;
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
+                            for (int cols = 0; cols < NCOLS; ++cols) {
+                                coverImage(cols, rows);
+                            }
+                        }
                     }
-                }
+                }));
 
+
+                timeline.play();
             }
-        }, 0);
-*/
-        for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
-            for (int cols = 0; cols < NCOLS; ++cols) {
-                coverImages(cols, rows);
-            }
-        }
 
-  //      initializeGridPaneArray();
+        });
 
-        int checked = 0;
-        while (checked != length / 2) {
-            startGame(cardCouples);
-            System.out.println("Ritorno a initializeGame");
-            ++checked;
-        }
+
+        startGame(cardCouples);
+
     }
 
     private void startGame(ArrayList<Integer> cardCouples) {
         ArrayList<Integer> indexList = new ArrayList<>();
-        int count = 0;      // numero di carte cliccate
+        ArrayList<Integer> uncoveredIndex = new ArrayList<>();
+
         int[] index = new int[1];
         final boolean[] ris = {false};
-     //   if (!ris[0]) {      // se non sono state cliccate 2 carte o le due carte sono diverse
 
-            gridPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {                  // quando viene cliccato la carta deve essere resa visibile
-                    index[0] = (indexCard(event));
-                    System.out.println("index = " + index[0]);
+        gridPane.setOnMouseClicked(event -> {                  // quando viene cliccato la carta deve essere resa visibile
+            index[0] = (indexCard(event));
+            System.out.println("index = " + index[0]);
 
-                    showImages(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
-                    indexList.add(index[0]);
-                    System.out.println("size = " + indexList.size());
-                    System.out.println("Stampa array da handle: " + Arrays.toString(indexList.toArray()));
-                    if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
+            showImage(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
+            if (!uncoveredIndex.contains(index[0]) && !indexList.contains(index[0])) {
+                indexList.add(index[0]);
+            }
+            if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
                 //        gridPane.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
-                        ris[0] = checkCoupleSelected(cardCouples, indexList);
 
-                        if (!ris[0]) {
-                            System.out.println("entro nell'if!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        } else {
-                            System.out.println("%n%n*********************************************************************************");
-                            Node n = getNodeFromGridPane(gridPane, indexList.get(0) % NCOLS, indexList.get(0) / NCOLS);
-                            System.out.println("trovato nodo 0: " + n);
-                            assert n != null;
-                            disableNode(n);
-
-                            n = getNodeFromGridPane(gridPane, indexList.get(0) % NCOLS, indexList.get(0) / NCOLS);
-                            disableNode(n);
-                        }
-                        indexList.clear();
-                    }
+                try {
+                    ris[0] = checkCoupleSelected(cardCouples, indexList);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
 
-            });
-            ++count;
-        }
+                if (!ris[0]) {
+                    System.out.println("diverse");
+                } else {
+                    uncoveredIndex.addAll(indexList);
+                    if (uncoveredIndex.size() == cardCouples.size()) {
+                        if (game.getLevel() < 4) {
+                            try {
+                                nextLevel();
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else {
+                            win();
+                        }
+                    }
+                }
+                indexList.clear();
+            }
+        });
+
+    }
 
 
     @FXML
-    private boolean checkCoupleSelected(ArrayList<Integer> cardCouples, ArrayList<Integer> index) {
+    private boolean checkCoupleSelected(ArrayList<Integer> cardCouples, ArrayList<Integer> index) throws InterruptedException {
         System.out.println("Stampa array da funzione: " + Arrays.toString(index.toArray()));
         if (Objects.equals(cardCouples.get(index.get(0)), cardCouples.get(index.get(1)))) {
             System.out.printf("uguali [%d][%d]", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
 
-            System.out.println("%n%n*********************************************************************************");
-            Node n = getNodeFromGridPane(gridPane, index.get(0) % NCOLS, index.get(0) / NCOLS);
-            assert n != null;
-            disableNode(n);
-
-            n = getNodeFromGridPane(gridPane, index.get(1) % NCOLS, index.get(1) / NCOLS);
-            assert n != null;
-            disableNode(n);
-
-
-            System.out.println("*********************************************************************************%n%n");
             return true;    // vanno rese non cliccabili
         } else {
-            System.out.printf("diversi [%d][%d]", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
+            System.out.printf("diversi [%d][%d]%n%n", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
             // da aggiungere delay!!
-            coverImages(index.get(0) % NCOLS, index.get(0) / NCOLS);
-            coverImages(index.get(1) % NCOLS, index.get(1) / NCOLS);
+            //   sleep(2);
 
+            //       showImage(cardCouples, index.get(1) % NCOLS, index.get(1) / NCOLS, index.get(1) / NCOLS * NCOLS + index.get(1) % NCOLS);
+            //    sleep(1500);
+
+            int col1 = index.get(0) % NCOLS;
+            int row1 = index.get(0) / NCOLS;
+            int col2 = index.get(1) % NCOLS;
+            int row2 = index.get(1) / NCOLS;
+            gridPane.setDisable(true);
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    coverCouple(col1, row1, col2, row2);
+                    // funzione che disabilita tutto ??
+                    gridPane.setDisable(false);
+                }
+            }));
+
+            timeline.play();
         }
         return false;
     }
@@ -247,16 +251,18 @@ public class GameController {
         // indice % NCOLS = colindex
     }
 
-    private void showImages(ArrayList<Integer> cardCouples, int cols, int rows, int count) {
-        System.out.println("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
+    private void showImage(ArrayList<Integer> cardCouples, int cols, int rows, int count) {
+        System.out.println("showing memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), 90, 90, true, true);
         ImageView imageView1 = new ImageView();
+        //   System.out.println("immagine: " + imageView1.getImage().getUrl());
         imageView1.setImage(image);
         gridPane.add(imageView1, cols, rows);
         GridPane.setHalignment(imageView1, HPos.CENTER);
     }
 
-    private void coverImages(int cols, int rows) {
+    private void coverImage(int cols, int rows) {
+        System.out.println("showing memoryImages/" + game.getTheme() + "/c" + game.getTheme() + ".jpg");
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c" + game.getTheme() + ".jpg")), 90, 90, true, true);
         ImageView imageView1 = new ImageView();
         imageView1.setImage(image);
@@ -264,14 +270,17 @@ public class GameController {
         GridPane.setHalignment(imageView1, HPos.CENTER);
     }
 
-    private void initializeGridPaneArray()
-    {
+    private void coverCouple(int cols1, int rows1, int cols2, int rows2) {
+        coverImage(cols1, rows1);
+        coverImage(cols2, rows2);
+    }
+
+    private void initializeGridPaneArray() {
         this.gridPaneArray = new Node[game.getLevel() + 1][NCOLS];
         System.out.println("%n%n*********************************************************************************");
-        for(Node node : this.gridPane.getChildren())
-        {
+        for (Node node : this.gridPane.getChildren()) {
 
-       //     this.gridPaneArray[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = node;
+            //     this.gridPaneArray[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = node;
             System.out.println("node = " + node);
         }
         System.out.println("*********************************************************************************%n%n");
@@ -297,10 +306,20 @@ public class GameController {
         node.setStyle("pointer-events: none");
         node.autosize();
         node.setStyle("border-style: solid; border-color: red;");
-       // node.cursorProperty().removeListener((ChangeListener<? super Cursor>) this);
+        // node.cursorProperty().removeListener((ChangeListener<? super Cursor>) this);
 
     }
 
+    private void nextLevel() throws InterruptedException {
+
+        game.setLevel(game.getLevel() + 1);
+        System.out.println("Nuovo livello: " + game.getLevel());
+        update();
+    }
+
+    private void win() {
+
+    }
 
 }
 

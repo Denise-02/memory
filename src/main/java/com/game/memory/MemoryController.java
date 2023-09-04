@@ -194,7 +194,7 @@ public class MemoryController {
          // Step 7
          stage.show();
      } catch (IOException e) {
-         System.err.println(String.format("Error: %s", e.getMessage()));
+         System.err.printf("Error: %s%n", e.getMessage());
      }
  }
 
@@ -230,6 +230,8 @@ public class MemoryController {
 
 
  } catch (IOException e) {
+         throw new RuntimeException(e);
+     } catch (InterruptedException e) {
          throw new RuntimeException(e);
      }
  }
