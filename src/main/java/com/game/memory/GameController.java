@@ -1,10 +1,7 @@
 package com.game.memory;
 
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
@@ -18,16 +15,6 @@ import javafx.util.Duration;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
-
-import static java.lang.Thread.sleep;
-
-/* https://www.datainfinities.com/27/pass-event-and-parameter-onclick-in-react#:~:text=To%20pass%20event%20and%20parameter%20onClick%20in%20React%2C%20declare%20an,an%20element(eg%20button).
- * How do you pass an event as a parameter?
- * To pass event and parameter onClick in React, declare an event handler
- * function and then pass it to the onClick prop of the element inside an inline arrow
- * function. Using React onClick event handler you can call a function and trigger an
- * action when a user clicks an element(e.g. button).
- * */
 
 public class GameController {
     // 4 x 2    --> livello 1: 4 immagini
@@ -50,10 +37,9 @@ public class GameController {
 
     private final int NCOLS = 4;
 
-    private int checked = 0;    // numero di coppie trovate
 
 
-    private Node[][] gridPaneArray = null;
+ //   private Node[][] gridPaneArray = null;
 
     /**
      * The level of the game. For each level the number of cards increases.
@@ -61,7 +47,7 @@ public class GameController {
     @FXML
     public void initialize() {
         game = new Game("", 1, 1);
-        gridPane.setGridLinesVisible(true);
+   //     gridPane.setGridLinesVisible(true);
     }
 
     public void receiveData(String theme, int mode, int level) throws InterruptedException {
@@ -73,7 +59,7 @@ public class GameController {
     }
 
     @FXML
-    void update() throws InterruptedException {
+    void update() {
         lblTheme.textProperty().set("" + game.getTheme());
         lblMode.textProperty().set("" + game.getMode());
         lblLevel.textProperty().set("" + game.getLevel());
@@ -82,7 +68,7 @@ public class GameController {
     }
 
     @FXML
-    private void initializeGame() throws InterruptedException {
+    private void initializeGame() {
         HashSet<Integer> cards = new HashSet<>();
         ArrayList<Integer> cardCouples = new ArrayList<>();
         System.out.println("The level is: " + game.getLevel());
@@ -127,27 +113,20 @@ public class GameController {
                 ++count;
             }
         }
-        btnStart.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                gridPane.setVisible(true);
-                btnStart.setVisible(false);
+        btnStart.setOnAction(actionEvent -> {
+            gridPane.setVisible(true);
+            btnStart.setVisible(false);
 
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
-                            for (int cols = 0; cols < NCOLS; ++cols) {
-                                coverImage(cols, rows);
-                            }
-                        }
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), actionEvent1 -> {
+                for (int rows = 0; rows < game.getLevel() + 1; ++rows) {
+                    for (int cols = 0; cols < NCOLS; ++cols) {
+                        coverImage(cols, rows);
                     }
-                }));
+                }
+            }));
 
 
-                timeline.play();
-            }
-
+            timeline.play();
         });
 
 
@@ -211,24 +190,16 @@ public class GameController {
             return true;    // vanno rese non cliccabili
         } else {
             System.out.printf("diversi [%d][%d]%n%n", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
-            // da aggiungere delay!!
-            //   sleep(2);
-
-            //       showImage(cardCouples, index.get(1) % NCOLS, index.get(1) / NCOLS, index.get(1) / NCOLS * NCOLS + index.get(1) % NCOLS);
-            //    sleep(1500);
 
             int col1 = index.get(0) % NCOLS;
             int row1 = index.get(0) / NCOLS;
             int col2 = index.get(1) % NCOLS;
             int row2 = index.get(1) / NCOLS;
             gridPane.setDisable(true);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    coverCouple(col1, row1, col2, row2);
-                    // funzione che disabilita tutto ??
-                    gridPane.setDisable(false);
-                }
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), actionEvent -> {
+                coverCouple(col1, row1, col2, row2);
+                // funzione che disabilita tutto ??
+                gridPane.setDisable(false);
             }));
 
             timeline.play();
@@ -275,7 +246,7 @@ public class GameController {
         coverImage(cols2, rows2);
     }
 
-    private void initializeGridPaneArray() {
+ /*   private void initializeGridPaneArray() {
         this.gridPaneArray = new Node[game.getLevel() + 1][NCOLS];
         System.out.println("%n%n*********************************************************************************");
         for (Node node : this.gridPane.getChildren()) {
@@ -285,9 +256,9 @@ public class GameController {
         }
         System.out.println("*********************************************************************************%n%n");
     }
+*/
 
-
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+  /*  private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
         for (Node node : gridPane.getChildren())
             if (GridPane.getColumnIndex(node) != null
                     && GridPane.getColumnIndex(node) != null
@@ -296,20 +267,7 @@ public class GameController {
                 return node;
         return null;
     }
-
-    private void disableNode(Node node) {
-        assert node != null;
-        System.out.println("DISATTIVO NODO" + node);
-        node.setDisable(true);
-        node.disableProperty();
-        node.disabledProperty();
-        node.setStyle("pointer-events: none");
-        node.autosize();
-        node.setStyle("border-style: solid; border-color: red;");
-        // node.cursorProperty().removeListener((ChangeListener<? super Cursor>) this);
-
-    }
-
+*/
     private void nextLevel() throws InterruptedException {
 
         game.setLevel(game.getLevel() + 1);
