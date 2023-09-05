@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -108,8 +109,18 @@ public class MemoryController {
             Parent view = loader.load();
             stage = new Stage();
             stage.setScene(new Scene(view));
+    //        stage.setResizable(false);
             stage.setTitle("Memory");
+/*
+            //   Stage window = PrimaryStage;
+            VBox layout = new VBox(10);
+//multiply to set size (0.80 is like 80% of the window)
+            layout.prefWidthProperty().bind(stage.widthProperty().multiply(1.00));
+*/
+
             stage.show();
+
+
 
             GameController controller = loader.getController();
 

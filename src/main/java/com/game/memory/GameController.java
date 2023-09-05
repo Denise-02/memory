@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -15,6 +16,8 @@ import javafx.util.Duration;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
+
+import static javafx.scene.AccessibleAttribute.COLUMN_COUNT;
 
 public class GameController {
     // 4 x 2    --> livello 1: 4 immagini
@@ -36,8 +39,11 @@ public class GameController {
     Game game;
 
     private final int NCOLS = 4;
+    private int sizeCard;
+    private int sizeContraint;
 
-
+    @FXML private VBox vBox;
+    @FXML private AnchorPane anchorPane;
 
  //   private Node[][] gridPaneArray = null;
 
@@ -47,14 +53,15 @@ public class GameController {
     @FXML
     public void initialize() {
         game = new Game("", 1, 1);
-   //     gridPane.setGridLinesVisible(true);
+        gridPane.setGridLinesVisible(true);
+
     }
 
     public void receiveData(String theme, int mode, int level) throws InterruptedException {
         game.setTheme(theme);
         game.setMode(mode);
-        game.setLevel(level);
-
+  //      game.setLevel(level);
+        game.setLevel(4);
         update();
     }
 
@@ -65,6 +72,7 @@ public class GameController {
         lblLevel.textProperty().set("" + game.getLevel());
         btnStart.setVisible(true);
         initializeGame();
+
     }
 
     @FXML
@@ -91,18 +99,34 @@ public class GameController {
         System.out.println("Stampa prima di shuffle " + Arrays.toString(cardCouples.toArray()));
         Collections.shuffle(cardCouples);
 
+        // livello 1:
+        //    private int sizeCard = 130;
+        //    private int sizeContraint = 160;
 
-        System.out.println("stampa dopo shuffle " + Arrays.toString(cardCouples.toArray()));
-        for (int i = 1; i <= game.getLevel(); ++i) {
-
-            gridPane.addRow(i, new ImageView(), new ImageView(), new ImageView(), new ImageView());
+        if (game.getLevel() == 1 || game.getLevel() == 2) {
+            sizeCard = 130;
+            sizeContraint = 160;         // dx      su     sx       giù
+       //     gridPane.setPadding(new Insets(70, 10, 5, 150));
+        } else if (game.getLevel() == 3 || game.getLevel() == 4) { //su   sx      giu       dx
+        //    gridPane.setPadding(new Insets(vBox.getW, 5, 150, 200));
+            sizeCard = 115;
+            sizeContraint = 125;
+       //     gridPane.setAlignment(Pos.CENTER);
         }
 
-        RowConstraints rowConstraints = new RowConstraints();
-        rowConstraints.setPercentHeight(100d / (game.getLevel() + 1));
-        rowConstraints.vgrowProperty().set(Priority.valueOf("SOMETIMES"));
-        rowConstraints.minHeightProperty().set(10.0);
-        rowConstraints.prefHeightProperty().set(30.0);
+        ColumnConstraints colConstraint = new ColumnConstraints(sizeContraint);
+        colConstraint.setHalignment(HPos.LEFT);
+
+        RowConstraints rowConstraints = new RowConstraints(sizeContraint);
+        rowConstraints.setValignment(VPos.CENTER);
+
+        gridPane.prefWidthProperty().bind(vBox.widthProperty());
+
+            gridPane.getColumnConstraints().clear();
+            gridPane.getColumnConstraints().addAll(colConstraint, colConstraint, colConstraint, colConstraint);
+
+
+        System.out.println("stampa dopo shuffle " + Arrays.toString(cardCouples.toArray()));
 
         gridPane.setVisible(false);
 
@@ -113,7 +137,15 @@ public class GameController {
                 ++count;
             }
         }
+
         btnStart.setOnAction(actionEvent -> {
+            gridPane.getRowConstraints().clear();
+            for (int i = 0; i <= game.getLevel(); ++i) {
+                gridPane.getRowConstraints().add(rowConstraints);
+                gridPane.addRow(i, new ImageView());
+
+            }
+
             gridPane.setVisible(true);
             btnStart.setVisible(false);
 
@@ -124,14 +156,10 @@ public class GameController {
                     }
                 }
             }));
-
-
             timeline.play();
         });
 
-
         startGame(cardCouples);
-
     }
 
     private void startGame(ArrayList<Integer> cardCouples) {
@@ -224,7 +252,7 @@ public class GameController {
 
     private void showImage(ArrayList<Integer> cardCouples, int cols, int rows, int count) {
         System.out.println("showing memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), 90, 90, true, true);
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), sizeCard, sizeCard, true, true);
         ImageView imageView1 = new ImageView();
         //   System.out.println("immagine: " + imageView1.getImage().getUrl());
         imageView1.setImage(image);
@@ -234,7 +262,7 @@ public class GameController {
 
     private void coverImage(int cols, int rows) {
         System.out.println("showing memoryImages/" + game.getTheme() + "/c" + game.getTheme() + ".jpg");
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c" + game.getTheme() + ".jpg")), 90, 90, true, true);
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c" + game.getTheme() + ".jpg")), sizeCard, sizeCard, true, true);
         ImageView imageView1 = new ImageView();
         imageView1.setImage(image);
         gridPane.add(imageView1, cols, rows);
