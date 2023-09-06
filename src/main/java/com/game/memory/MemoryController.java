@@ -14,44 +14,34 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 
 public class MemoryController {
 
     @FXML
     private MenuButton btnMode;
-
     @FXML
     private Button btnStart;
-
     @FXML
     private ImageView imgPacman;
-
     @FXML
     private ImageView imgPokemon;
-
     @FXML
     private ImageView imgSpongebob;
     @FXML
     private ImageView imgSuperMario;
-
     @FXML
     private MenuItem modeTime;
-
     @FXML
     private MenuItem modeLife;
-
     @FXML
     private GridPane gridPane;
     private String theme;
     private int mode;
 
-    /** c
-     * Initializes the controller class. This method is automatically called after the fxml file has been loaded.
+    /**
+     * Initializes the MemoryController class.
      */
-
     @FXML
     public void initialize() {
         btnMode.setVisible(false);
@@ -70,21 +60,28 @@ public class MemoryController {
         imgSpongebob.setImage(image);
 
         gameSettings();
-
     }
 
+    /**
+     * Sets the events on each node of the controller.
+     */
     private void gameSettings() {
-
+        /**
+         * btnMode turns visible when gridPane is clicked.
+         */
         gridPane.setOnMouseClicked(mouseEvent -> btnMode.setVisible(true));
 
+        /**
+         * Game.theme is set depending on the clicked image.
+         */
         imgPacman.setOnMouseClicked(mouseEvent -> theme = "PacMan");
-
         imgPokemon.setOnMouseClicked(mouseEvent -> theme = "Pokemon");
-
         imgSuperMario.setOnMouseClicked(mouseEvent -> theme = "SuperMario");
-
         imgSpongebob.setOnMouseClicked(mouseEvent -> theme = "Spongebob");
 
+        /**
+         * btnStart turns visible when Game.mode is set.
+         */
         modeLife.setOnAction(actionEvent -> {
             btnMode.setText(modeLife.getText());
             btnStart.setVisible(true);
@@ -95,39 +92,46 @@ public class MemoryController {
             btnStart.setVisible(true);
         });
 
-        mode = btnMode.getText().compareTo("Life") == 0 ? 1 : 2;    // life = 1, time = 2
+        /**
+         * Game.mode is set as:
+         * 1 if "life" was chosen, 2 otherwise
+         */
+        mode = btnMode.getText().compareTo("Life") == 0 ? 1 : 2;
     }
 
+    /**
+     * This method links this controller to GameController class when btnStart is clicked.
+     * @param event btnStart onMouseClicked
+     * @throws RuntimeException
+     */
     @FXML
-    public void sendData(MouseEvent event) throws RuntimeException {     // startGame
-            Node node = (Node) event.getSource();
-            Stage stage = (Stage) node.getScene().getWindow();
-            stage.close();
+    public void sendData(MouseEvent event) throws RuntimeException {
+        Node node = (Node) event.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        stage.close();
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game-view.fxml"));
             Parent view = loader.load();
             stage = new Stage();
             stage.setScene(new Scene(view));
-    //        stage.setResizable(false);
+            //        stage.setResizable(false);
             stage.setTitle("Memory");
 /*
             //   Stage window = PrimaryStage;
             VBox layout = new VBox(10);
-//multiply to set size (0.80 is like 80% of the window)
+            //multiply to set size (0.80 is like 80% of the window)
             layout.prefWidthProperty().bind(stage.widthProperty().multiply(1.00));
 */
-
             stage.show();
-
-
 
             GameController controller = loader.getController();
 
-            // Set the game modalities into the GameController
+            /**
+             * Set the game modalities into GameController.
+             */
             controller.receiveData(theme, mode, 1);
             controller.update();
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -191,12 +195,8 @@ public class MemoryController {
          Scene scene = new Scene(view);
          stage.setTitle("Memory");
          stage.setScene(scene);
-
-
-
  } catch (IOException | InterruptedException e) {
          throw new RuntimeException(e);
      }
  }*/
-
 }
