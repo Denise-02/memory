@@ -3,7 +3,6 @@ package com.game.memory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -80,7 +79,7 @@ public class MemoryController {
         imgSpongebob.setOnMouseClicked(mouseEvent -> theme = "Spongebob");
 
         /**
-         * btnStart turns visible when Game.mode is set.
+         * btnStart turns visible when Game. Mode is set.
          */
         modeLife.setOnAction(actionEvent -> {
             btnMode.setText(modeLife.getText());
@@ -116,12 +115,11 @@ public class MemoryController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game-view.fxml"));
             Scene scene = new Scene(loader.load(), 800, 550);
             stage = new Stage();
-            stage.setScene(scene);         // new Scene(view));
+            stage.setScene(scene);
             //        stage.setResizable(false);
             stage.setTitle("Memory");
             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
             FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
-      //
             stage.show();
 
             GameController controller = loader.getController();
@@ -131,9 +129,7 @@ public class MemoryController {
              */
             controller.receiveData(theme, mode, 1);
             controller.update();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }

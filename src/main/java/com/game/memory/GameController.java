@@ -1,8 +1,8 @@
 package com.game.memory;
 
 import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,18 +10,14 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Popup;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -30,12 +26,7 @@ import java.util.*;
 import java.util.random.RandomGenerator;
 
 
-
-public class GameController {
-    // 4 x 2    --> livello 1: 4 immagini
-    // 4 x 3    --> livello 2: 6
-    // 4 x 4    --> livello 3: 8
-    // 4 x 5    --> livello 4: 10
+public class GameController extends Thread{
     @FXML
     private GridPane gridPane;
     @FXML
@@ -74,7 +65,12 @@ public class GameController {
     @FXML
     private Label lblWinOrLose;
 
+   // @FXML
+   // private ProgressIndicator progressIndicator;
+
     private int nLife;
+    TimeBar timeBar;
+
 
     /**
      * Initializes the GameController class.
@@ -82,8 +78,7 @@ public class GameController {
     @FXML
     public void initialize() {
         game = new Game("", 1, 1);
-        //   gridPane.setGridLinesVisible(true);
-        //   anchorPane.setStyle("-fx-background-image: url('')");
+
     }
 
     /**
@@ -99,7 +94,7 @@ public class GameController {
         game.setMode(mode);
         game.setLevel(level);
 
-        update();   //VIENE CHIAMATO ANCHE IN MemoryController
+        update();
     }
 
     @FXML
@@ -107,9 +102,9 @@ public class GameController {
         lblTheme.textProperty().set("" + game.getTheme());
         lblMode.textProperty().set("" + game.getMode());
         lblLevel.textProperty().set("" + game.getLevel());
+        disableComponent();
+
         btnStart.setVisible(true);
-        anchorPopup.setDisable(true);
-        anchorPopup.setVisible(false);
 
         if (game.getLevel() == 4) {
             NCOLS = 5;
@@ -118,35 +113,94 @@ public class GameController {
             NROWS = game.getLevel() + 1;
         }
 
-        if (game.getMode() == 1) {  // 1 = vite
+        if (game.getMode() == 1) {          // 1 = Life
             progressBar.setVisible(false);
             nLife = 3;
             fillGridLife();
-        } else if (game.getMode() == 2) {
+        } else if (game.getMode() == 2) {   // 2 = Time
             gridLife.setVisible(false);
-            Timer timer = new Timer();
+            progressBar = new ProgressBar();
+            System.out.println("lo è? " + progressBar.isIndeterminate());
+            progressBar.indeterminateProperty();
+            System.out.println("lo è? " + progressBar.isIndeterminate());
+            timeBar = new TimeBar(progressBar);
 
         }
-
-
-
-
 
 
         initializeGame();
     }
 
-
-
-
-
+    private void disableComponent() {
+        gridPane.getChildren().clear();
+        anchorPopup.setDisable(true);
+        anchorPopup.setVisible(false);
+        gridPane.setDisable(true);
+    }
 
     /**
      * Sets the game scene.
      */
     @FXML
     private void initializeGame() {
+        ArrayList<Integer> cardCouples = randomCards();
 
+        setContraints();
+
+        for (int rows = 0; rows < NROWS; ++rows) {
+            for (int cols = 0; cols < NCOLS; ++cols) {
+                coverImage(cols, rows);
+            }
+        }
+
+        /**
+         * The images are shown for three seconds, then covered.
+         */
+        btnStart.setOnAction(actionEvent -> {
+
+            btnStart.setVisible(false);
+
+            int count = 0;
+            for (int rows = 0; rows < NROWS; ++rows) {
+                for (int cols = 0; cols < NCOLS; ++cols) {
+                    showImage(cardCouples, cols, rows, count);
+                    ++count;
+                }
+            }
+
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(getShowTime()), actionEvent1 -> {
+                for (int rows = 0; rows < NROWS; ++rows) {
+                    for (int cols = 0; cols < NCOLS; ++cols) {
+                        coverImage(cols, rows);
+                    }
+                }
+
+                gridPane.setDisable(false);
+            }));
+            timeline.play();
+        progressBar.setProgress(0.5);
+        progressBar.progressProperty().set(0.7);
+
+        System.out.println("get " + progressBar.getProgress());
+         //   startProgress(actionEvent);
+        });
+
+
+        startGame(cardCouples);
+    }
+
+    private double getShowTime() {
+        double showTime = 0;
+        switch (game.getLevel()) {
+            case (1) -> showTime = 2;
+            case (2) -> showTime = 3.5;
+            case (3) -> showTime = 4.5;
+            case (4) -> showTime = 5.5;
+        }
+        return showTime;
+    }
+
+    private ArrayList<Integer> randomCards() {
         /**
          * The Set is used to randomize the choice of cards without duplicates.
          */
@@ -156,10 +210,6 @@ public class GameController {
          * cardCouples is an array containing all the cards of this level.
          */
         ArrayList<Integer> cardCouples = new ArrayList<>();
-
-        System.out.println("The level is: " + game.getLevel());
-        System.out.println("The theme is: " + game.getTheme());
-        System.out.println("The mode is: " + game.getMode());
 
         /**
          * The number of different cards.
@@ -177,15 +227,15 @@ public class GameController {
         cardCouples.addAll(cards);
         cardCouples.addAll(cards);
 
-        System.out.println("Stampa prima di shuffle " + Arrays.toString(cardCouples.toArray()));
         Collections.shuffle(cardCouples);
-        System.out.println("stampa dopo shuffle " + Arrays.toString(cardCouples.toArray()));
+        return cardCouples;
+    }
 
-
+    private void setContraints() {
         if (game.getLevel() == 1 || game.getLevel() == 2) {
             sizeCard = 130;
             sizeConstraint = 160;
-        } else if (game.getLevel() == 3 || game.getLevel() == 4) { //su   sx      giu       dx
+        } else if (game.getLevel() == 3 || game.getLevel() == 4) {
             sizeCard = 115;
             sizeConstraint = 125;
         }
@@ -199,75 +249,14 @@ public class GameController {
         gridPane.prefWidthProperty().bind(vBox.widthProperty());
 
         gridPane.getColumnConstraints().clear();
-
-        //     gridPane.getColumnConstraints().addAll(colConstraint, colConstraint, colConstraint, colConstraint);
         for (int i = 0; i < NCOLS; ++i) {
             gridPane.getColumnConstraints().add(colConstraint);
         }
-        System.out.println("constraint colonne: " + gridPane.getColumnConstraints());
 
         gridPane.getRowConstraints().clear();
         for (int i = 0; i < NROWS; ++i) {
             gridPane.getRowConstraints().add(rowConstraints);
-            //    gridPane.addRow(i, new ImageView());
         }
-        System.out.println("constraint righe: " + gridPane.getRowConstraints());
-        System.out.println("count = " + (long) gridPane.getRowConstraints().size());
-
-
-        for (int rows = 0; rows < NROWS; ++rows) {
-            for (int cols = 0; cols < NCOLS; ++cols) {
-                coverImage(cols, rows);
-            }
-        }
-
-        gridPane.setDisable(true);
-        btnStart.setOnAction(actionEvent -> {
-
-            btnStart.setVisible(false);
-
-            /**
-             * The images are shown for three seconds, then covered.
-             */
-
-            int count = 0;
-            for (int rows = 0; rows < NROWS; ++rows) {
-                for (int cols = 0; cols < NCOLS; ++cols) {
-                    showImage(cardCouples, cols, rows, count);
-                    ++count;
-                }
-            }
-
-
-            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), actionEvent1 -> {
-                for (int rows = 0; rows < NROWS; ++rows) {
-                    for (int cols = 0; cols < NCOLS; ++cols) {
-                        coverImage(cols, rows);
-                    }
-                }
-                if (game.getMode() == 2) {
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            System.out.println("timer va");
-                            lose();
-                        }
-                    }, 5000);
-                }
-
-                progressBar = new ProgressBar(100);
-                progressBar.setProgress(10);
-
-                gridPane.setDisable(false);
-            }));
-            timeline.play();
-
-
-        });
-
-
-        startGame(cardCouples);
     }
 
     private void startGame(ArrayList<Integer> cardCouples) {
@@ -275,10 +264,7 @@ public class GameController {
          * The indexList ArrayList contains the couple of cards the user chooses.
          */
         ArrayList<Integer> indexList = new ArrayList<>();
- /*       Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "Background.jpg")));
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
-                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true));
-anchorPane.setBackground(new Background(backgroundImage)); */
+
         /**
          * The uncoveredIndex ArrayList contains the indexes of the card that are uncovered cause the player found
          * the right couple. The images of this array can't be covered anymore.
@@ -293,7 +279,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
          */
         gridPane.setOnMouseClicked(event -> {
             index[0] = (indexCard(event));
-            System.out.println("index = " + index[0]);
 
             showImage(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
             if (!uncoveredIndex.contains(index[0]) && !indexList.contains(index[0])) {
@@ -301,7 +286,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
             }
 
             if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
-                //        gridPane.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                 try {
                     ris[0] = checkCoupleSelected(cardCouples, indexList);
                 } catch (InterruptedException e) {
@@ -363,7 +347,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
             gridPane.setDisable(true);
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), actionEvent -> {
                 coverCouple(col1, row1, col2, row2);
-                // funzione che disabilita tutto ??
                 gridPane.setDisable(false);
             }));
             timeline.play();
@@ -373,7 +356,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
 
     private void removeLife() {
         --nLife;
-
         switch (nLife) {
             case (2) -> imgLife3.setVisible(false);
             case (1) -> imgLife2.setVisible(false);
@@ -385,6 +367,9 @@ anchorPane.setBackground(new Background(backgroundImage)); */
         }
     }
 
+    /**
+     * Shows a pop-up announcing the lose of the game.
+     */
     @FXML
     private void lose() {
         System.out.println("Hai perso");
@@ -393,8 +378,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
         anchorPopup.setVisible(true);
         lblWinOrLose.setText("Lose");
     }
-// nr * NCOLS + nc = indice array
-    //   1 * 4 + 3 = 7
 
     /**
      * This method computes the index of matrix cell using matrix algorithm.
@@ -407,11 +390,8 @@ anchorPane.setBackground(new Background(backgroundImage)); */
         Node clickedNode = e.getPickResult().getIntersectedNode();
         Integer colIndex = GridPane.getColumnIndex(clickedNode);
         Integer rowIndex = GridPane.getRowIndex(clickedNode);
-        //       System.out.printf("Mouse entered cell [%d, %d]%n", colIndex, rowIndex);
 
         return rowIndex * NCOLS + colIndex;
-        // indice / NCOLS = rowIndex
-        // indice % NCOLS = colindex
     }
 
     /**
@@ -423,10 +403,8 @@ anchorPane.setBackground(new Background(backgroundImage)); */
      * @param count       the index of the image in cardCouples ArrayList
      */
     private void showImage(ArrayList<Integer> cardCouples, int cols, int rows, int count) {
-        //     System.out.println("showing memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg");
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), sizeCard, sizeCard, true, true);
         ImageView imageView1 = new ImageView();
-        //System.out.println("immagine: " + imageView1.getImage().getUrl());
         imageView1.setImage(image);
         gridPane.add(imageView1, cols, rows);
         GridPane.setHalignment(imageView1, HPos.CENTER);
@@ -439,7 +417,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
      * @param rows the row index of the cell to be covered.
      */
     private void coverImage(int cols, int rows) {
-        System.out.println("showing memoryImages/" + game.getTheme() + "/c" + game.getTheme() + ".jpg");
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/c" + game.getTheme() + ".jpg")), sizeCard, sizeCard, true, true);
         ImageView imageView1 = new ImageView();
         imageView1.setImage(image);
@@ -468,14 +445,12 @@ anchorPane.setBackground(new Background(backgroundImage)); */
      */
     private void nextLevel() throws InterruptedException {
         game.setLevel(game.getLevel() + 1);
-        System.out.println("Nuovo livello: " + game.getLevel());
+        lblLevel.setText("" + game.getLevel());
 
-        gridPane.getChildren().clear();
         update();
     }
 
     private void fillGridLife() {
-        System.out.println("showing memoryImages/others/heart.png");
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/heart.png")), 70, 70, true, true);
         imgLife3.setImage(image);
         imgLife2.setImage(image);
@@ -501,7 +476,6 @@ anchorPane.setBackground(new Background(backgroundImage)); */
         Stage stage = (Stage) node.getScene().getWindow();
         stage.close();
 
-
         FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage = new Stage();
@@ -516,6 +490,48 @@ anchorPane.setBackground(new Background(backgroundImage)); */
 
     public void restart(ActionEvent actionEvent) {
         game.setLevel(1);
+        NCOLS = 4;
         update();
     }
+
+    public void startProgress(ActionEvent actionEvent) {
+        Thread thread = new Thread(timeBar);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public class TimeBar implements Runnable{
+        ProgressBar progressBar;
+
+        public TimeBar(ProgressBar progressBar) {
+            this.progressBar = progressBar;
+        }
+        @Override
+        public void run() {
+            //   System.out.println("progress = " + progressBar.getProgress());
+            while(progressBar.getProgress() <= 1) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setProgress(progressBar.getProgress() + 0.1);
+
+                        System.out.println("progress = " + progressBar.getProgress());
+
+                    }
+                });
+                synchronized (this) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+            System.out.println("finito");
+
+        }
+    }
+
 }

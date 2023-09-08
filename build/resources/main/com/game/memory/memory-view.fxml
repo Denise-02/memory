@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -13,58 +13,67 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.layout.BorderPane?>
-
-
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="700.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.game.memory.MemoryController">
-   <children>
-       <VBox alignment="TOP_CENTER" layoutX="-1.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="1.0">
-      <Label alignment="TOP_CENTER" contentDisplay="CENTER" layoutX="204.0" layoutY="14.0" prefHeight="80.0" prefWidth="599.0" text="Memory">
-         <font>
-            <Font size="52.0" />
-         </font>
-      </Label>
-      <GridPane fx:id="gridPane" alignment="TOP_CENTER" layoutX="65.0" layoutY="100.0" prefHeight="95.0" prefWidth="482.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <image>
-              <!--    <Image url="@memoryImages/c1.png" />  -->
-               </image>
-            </ImageView>
-            <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <image>
-       <!--           <Image url="@memoryImages/cPokemon.jpg" /> -->
-               </image>
-            </ImageView>
-            <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <image>
-                   <!--    <Image url="@memoryImages/cSuperMario.jpg" /> -->
-               </image>
-            </ImageView>
-            <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <image>
-                   <!--    <Image url="@memoryImages/cSpongebob.jpg" /> -->
-               </image>
-            </ImageView>
-         </children>
-      </GridPane>
-      <MenuButton fx:id="btnMode" mnemonicParsing="false" prefHeight="36.0" prefWidth="130.0"   text="Mode">
-        <items>
-          <MenuItem fx:id="modeLife" mnemonicParsing="false" text="Life" />
-          <MenuItem fx:id="modeTime" mnemonicParsing="false" text="Time" />
-        </items>
-      </MenuButton>
-      <Button fx:id="btnStart" mnemonicParsing="false" onMouseClicked="#sendData" prefHeight="40.0" prefWidth="131.0" text="Start" />
-       </VBox>
-   </children>
+    <children>
+        <VBox alignment="TOP_CENTER" layoutX="-1.0" prefHeight="600.0" prefWidth="700.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="1.0">
+            <Label alignment="CENTER" contentDisplay="CENTER" graphicTextGap="10.0" layoutX="204.0" layoutY="14.0" lineSpacing="20.0" prefHeight="110.0" prefWidth="606.0" text="Memory" textAlignment="CENTER">
+                <font>
+                    <Font name="System Italic" size="64.0" />
+                </font>
+            </Label>
+            <GridPane fx:id="gridPane" alignment="TOP_CENTER" layoutX="65.0" layoutY="100.0" prefHeight="134.0" prefWidth="700.0">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+                <children>
+                    <ImageView fx:id="imgPacman" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                        <image>
+                            <!--    <Image url="@memoryImages/c1.png" />  -->
+                        </image>
+                    </ImageView>
+                    <ImageView fx:id="imgPokemon" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                        <image>
+                            <!--           <Image url="@memoryImages/cPokemon.jpg" /> -->
+                        </image>
+                    </ImageView>
+                    <ImageView fx:id="imgSuperMario" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                        <image>
+                            <!--    <Image url="@memoryImages/cSuperMario.jpg" /> -->
+                        </image>
+                    </ImageView>
+                    <ImageView fx:id="imgSpongebob" fitHeight="119.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                        <image>
+                            <!--    <Image url="@memoryImages/cSpongebob.jpg" /> -->
+                        </image>
+                    </ImageView>
+                </children>
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" />
+                </padding>
+            </GridPane>
+            <AnchorPane prefHeight="293.0" prefWidth="704.0">
+                <children>
+                    <MenuButton fx:id="btnMode" alignment="CENTER" contentDisplay="CENTER" layoutX="278.0" layoutY="22.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="142.0" text="Mode" textAlignment="CENTER" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0">
+                        <items>
+                            <MenuItem fx:id="modeLife" mnemonicParsing="false" text="Life" />
+                            <MenuItem fx:id="modeTime" mnemonicParsing="false" text="Time" />
+                        </items>
+                        <font>
+                            <Font size="18.0" />
+                        </font>
+                    </MenuButton>
+                    <Button fx:id="btnStart" contentDisplay="CENTER" layoutX="278.0" layoutY="87.0" mnemonicParsing="false" onMouseClicked="#sendData" prefHeight="43.0" prefWidth="142.0" text="Start" textAlignment="CENTER" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0">
+                        <font>
+                            <Font size="18.0" />
+                        </font></Button>
+                </children>
+            </AnchorPane>
+        </VBox>
+    </children>
 </AnchorPane>
-
