@@ -1,11 +1,16 @@
 package com.game.memory;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -13,10 +18,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.random.RandomGenerator;
+
+
 
 public class GameController {
     // 4 x 2    --> livello 1: 4 immagini
@@ -56,6 +69,10 @@ public class GameController {
     private ImageView imgLife2;
     @FXML
     private ImageView imgLife3;
+    @FXML
+    private AnchorPane anchorPopup;
+    @FXML
+    private Label lblWinOrLose;
 
     private int nLife;
 
@@ -91,6 +108,8 @@ public class GameController {
         lblMode.textProperty().set("" + game.getMode());
         lblLevel.textProperty().set("" + game.getLevel());
         btnStart.setVisible(true);
+        anchorPopup.setDisable(true);
+        anchorPopup.setVisible(false);
 
         if (game.getLevel() == 4) {
             NCOLS = 5;
@@ -103,14 +122,24 @@ public class GameController {
             progressBar.setVisible(false);
             nLife = 3;
             fillGridLife();
-            gridLife.setGridLinesVisible(true);
         } else if (game.getMode() == 2) {
             gridLife.setVisible(false);
+            Timer timer = new Timer();
+
         }
+
+
+
+
 
 
         initializeGame();
     }
+
+
+
+
+
 
     /**
      * Sets the game scene.
@@ -185,7 +214,6 @@ public class GameController {
         System.out.println("constraint righe: " + gridPane.getRowConstraints());
         System.out.println("count = " + (long) gridPane.getRowConstraints().size());
 
-        //   gridPane.setVisible(false);
 
         for (int rows = 0; rows < NROWS; ++rows) {
             for (int cols = 0; cols < NCOLS; ++cols) {
@@ -195,13 +223,7 @@ public class GameController {
 
         gridPane.setDisable(true);
         btnStart.setOnAction(actionEvent -> {
-      /*      gridPane.getRowConstraints().clear();
-            for (int i = 0; i < NROWS; ++i) {
-                gridPane.getRowConstraints().add(rowConstraints);
-                gridPane.addRow(i, new ImageView());
-            }
-*/
-            //    gridPane.setVisible(true);
+
             btnStart.setVisible(false);
 
             /**
@@ -223,10 +245,27 @@ public class GameController {
                         coverImage(cols, rows);
                     }
                 }
+                if (game.getMode() == 2) {
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            System.out.println("timer va");
+                            lose();
+                        }
+                    }, 5000);
+                }
+
+                progressBar = new ProgressBar(100);
+                progressBar.setProgress(10);
+
                 gridPane.setDisable(false);
             }));
             timeline.play();
+
+
         });
+
 
         startGame(cardCouples);
     }
@@ -313,7 +352,7 @@ anchorPane.setBackground(new Background(backgroundImage)); */
             return true;
         } else {
             //          System.out.printf("diversi [%d][%d]%n%n", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
-            if (game.getLevel() == 1) {
+            if (game.getMode() == 1) {
                 System.out.println("togliamo una vita");
                 removeLife();
             }
@@ -344,15 +383,15 @@ anchorPane.setBackground(new Background(backgroundImage)); */
         if (nLife == 0) {
             lose();
         }
-
-        //gridLife.getChildren().get(nLife).setVisible(false);
-        //      gridLife.getChildren().remove(0);
-        System.out.println("getChildren: " + gridLife.getChildren() + ", nLife = " + nLife);
-
     }
 
+    @FXML
     private void lose() {
         System.out.println("Hai perso");
+        gridPane.setDisable(true);
+        anchorPopup.setDisable(false);
+        anchorPopup.setVisible(true);
+        lblWinOrLose.setText("Lose");
     }
 // nr * NCOLS + nc = indice array
     //   1 * 4 + 3 = 7
@@ -450,6 +489,33 @@ anchorPane.setBackground(new Background(backgroundImage)); */
      * Shows a pop-up announcing the win of the game.
      */
     private void win() {
+        System.out.println("Hai vinto");
+        gridPane.setDisable(true);
+        anchorPopup.setDisable(false);
+        anchorPopup.setVisible(true);
+        lblWinOrLose.setText("Win");
+    }
 
+    public void returnToMenu(ActionEvent actionEvent) throws IOException {
+        Node node = (Node) actionEvent.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        stage.close();
+
+
+        FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Memory Menu");
+        stage.setResizable(false);
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    public void restart(ActionEvent actionEvent) {
+        game.setLevel(1);
+        update();
     }
 }

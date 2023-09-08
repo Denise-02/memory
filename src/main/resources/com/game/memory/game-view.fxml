@@ -27,6 +27,13 @@
             <Image url="@memoryImages/others/settings.png" />
          </image>
       </ImageView>
+      <AnchorPane fx:id="anchorPopup" layoutX="168.0" layoutY="51.0" prefHeight="326.0" prefWidth="494.0" style="-fx-background-color: white; -fx-border-color: black;">
+         <children>
+            <Label fx:id="lblWinOrLose" layoutX="233.0" layoutY="86.0" text="Label" />
+            <Button fx:id="btnReturn" layoutX="23.0" layoutY="279.0" mnemonicParsing="false" onAction="#returnToMenu" text="Menu" />
+            <Button fx:id="btnRestart" layoutX="421.0" layoutY="279.0" mnemonicParsing="false" onAction="#restart" text="Restart" />
+         </children>
+      </AnchorPane>
 
 
     </AnchorPane>

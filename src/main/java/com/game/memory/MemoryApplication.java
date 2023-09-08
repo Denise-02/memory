@@ -20,6 +20,7 @@ public class MemoryApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage.setTitle("Memory Menu");
+        stage.setResizable(false);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
         stage.setScene(scene);
         stage.show();
