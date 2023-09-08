@@ -85,18 +85,20 @@ public class MemoryController {
         modeLife.setOnAction(actionEvent -> {
             btnMode.setText(modeLife.getText());
             btnStart.setVisible(true);
+            mode = 1;
         });
 
         modeTime.setOnAction(actionEvent -> {
             btnMode.setText(modeTime.getText());
             btnStart.setVisible(true);
+            mode = 2;
         });
 
         /**
          * Game.mode is set as:
          * 1 if "life" was chosen, 2 otherwise
          */
-        mode = btnMode.getText().compareTo("Life") == 0 ? 1 : 2;
+    //    mode = btnMode.getText().compareTo("Mode") == 0 ? 1 : 2;
     }
 
     /**
@@ -112,17 +114,16 @@ public class MemoryController {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game-view.fxml"));
-            Parent view = loader.load();
+          //  Parent view = loader.load();
+
+            Scene scene = new Scene(loader.load(), 800, 550);
             stage = new Stage();
-            stage.setScene(new Scene(view));
+            stage.setScene(scene);         // new Scene(view));
             //        stage.setResizable(false);
             stage.setTitle("Memory");
-/*
-            //   Stage window = PrimaryStage;
-            VBox layout = new VBox(10);
-            //multiply to set size (0.80 is like 80% of the window)
-            layout.prefWidthProperty().bind(stage.widthProperty().multiply(1.00));
-*/
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
+            FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
+      //
             stage.show();
 
             GameController controller = loader.getController();
@@ -132,71 +133,11 @@ public class MemoryController {
              */
             controller.receiveData(theme, mode, 1);
             controller.update();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-/*
- @FXML
- private void sendData(MouseEvent event) {
-     // Step 1
-     game = new Game(theme,mode,1);
-     // Step 2
-     Node node = (Node) event.getSource();
-     // Step 3
-     Stage stage = (Stage) node.getScene().getWindow();
-     stage.close();
-     try {
-         // Step 4
-         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("game-view.fxml")));
-         // Step 5
-         stage.setUserData(game);
-         // Step 6
-         Scene scene = new Scene(root);
-         stage.setTitle("Memory");
-         stage.setScene(scene);
-         // Step 7
-         stage.show();
-     } catch (IOException e) {
-         System.err.printf("Error: %s%n", e.getMessage());
-     }
- }
-        */
-
-            /*
- @FXML
- private void sendData(MouseEvent event) {
-     game = new Game(theme,mode,1);
-
-     try {
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(getClass().getResource("game-view.fxml"));
-         DialogPane view = loader.load();
-         GameController controller = loader.getController();
-// Set the person into the controller.
-         controller.receiveData(theme, mode, 1);
-// Create the dialog
-         Dialog<ButtonType> dialog = new Dialog<>();
-         dialog.setTitle("Memory");
-         dialog.initModality(Modality.WINDOW_MODAL);
-         dialog.setDialogPane(view);
-
-         Node node = (Node) event.getSource();
-         Stage stage = (Stage) node.getScene().getWindow();
-         stage.close();     // fa chiudere la schermata del menu
-
-         dialog.showAndWait();
-
-         /*
-
-         Scene scene = new Scene(view);
-         stage.setTitle("Memory");
-         stage.setScene(scene);
- } catch (IOException | InterruptedException e) {
-         throw new RuntimeException(e);
-     }
- }*/
 }
