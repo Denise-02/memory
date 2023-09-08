@@ -3,7 +3,6 @@ package com.game.memory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -71,6 +70,7 @@ public class MemoryController {
          */
         gridPane.setOnMouseClicked(mouseEvent -> btnMode.setVisible(true));
 
+
         /**
          * Game.theme is set depending on the clicked image.
          */
@@ -116,12 +116,11 @@ public class MemoryController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game-view.fxml"));
             Scene scene = new Scene(loader.load(), 800, 550);
             stage = new Stage();
-            stage.setScene(scene);         // new Scene(view));
-            //        stage.setResizable(false);
+            stage.setScene(scene);
             stage.setTitle("Memory");
             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
             FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
-      //
+
             stage.show();
 
             GameController controller = loader.getController();
