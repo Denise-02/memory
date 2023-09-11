@@ -66,17 +66,12 @@ public class MemoryController {
      */
     private void gameSettings() {
         /**
-         * btnMode turns visible when gridPane is clicked.
+         * Game.theme is set depending on the clicked image. btnMode turns visible when a theme is clicked.
          */
-        gridPane.setOnMouseClicked(mouseEvent -> btnMode.setVisible(true));
-
-        /**
-         * Game.theme is set depending on the clicked image.
-         */
-        imgPacman.setOnMouseClicked(mouseEvent -> theme = "PacMan");
-        imgPokemon.setOnMouseClicked(mouseEvent -> theme = "Pokemon");
-        imgSuperMario.setOnMouseClicked(mouseEvent -> theme = "SuperMario");
-        imgSpongebob.setOnMouseClicked(mouseEvent -> theme = "Spongebob");
+        imgPacman.setOnMouseClicked(mouseEvent -> { theme = "PacMan"; btnMode.setVisible(true); });
+        imgPokemon.setOnMouseClicked(mouseEvent -> { theme = "Pokemon"; btnMode.setVisible(true); });
+        imgSuperMario.setOnMouseClicked(mouseEvent -> { theme = "SuperMario"; btnMode.setVisible(true); });
+        imgSpongebob.setOnMouseClicked(mouseEvent -> { theme = "Spongebob"; btnMode.setVisible(true); });
 
         /**
          * btnStart turns visible when Game. Mode is set.
@@ -116,8 +111,8 @@ public class MemoryController {
             Scene scene = new Scene(loader.load(), 800, 550);
             stage = new Stage();
             stage.setScene(scene);
-            //        stage.setResizable(false);
             stage.setTitle("Memory");
+            stage.setResizable(false);
             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
             FXMLLoader fxmlLoader = new FXMLLoader(MemoryApplication.class.getResource("memory-view.fxml"));
             stage.show();

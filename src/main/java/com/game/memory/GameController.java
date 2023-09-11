@@ -1,8 +1,10 @@
 package com.game.memory;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,10 +12,10 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -26,34 +28,17 @@ import java.util.*;
 import java.util.random.RandomGenerator;
 
 
-public class GameController extends Thread{
+public class GameController {
     @FXML
     private GridPane gridPane;
-    @FXML
-    private Label lblTheme;
-    @FXML
-    private Label lblMode;
     @FXML
     private Label lblLevel;
     @FXML
     private Button btnStart;
-
-    Game game;
-
-    private int NCOLS = 4;
-    private int NROWS;
-    private int sizeCard;
-    private int sizeConstraint;
-
     @FXML
     private VBox vBox;
-
-    @FXML
-    private ProgressBar progressBar;
-
     @FXML
     private GridPane gridLife;
-
     @FXML
     private ImageView imgLife1;
     @FXML
@@ -61,16 +46,16 @@ public class GameController extends Thread{
     @FXML
     private ImageView imgLife3;
     @FXML
-    private AnchorPane anchorPopup;
-    @FXML
-    private Label lblWinOrLose;
-
-   // @FXML
-   // private ProgressIndicator progressIndicator;
-
+    private VBox vBoxTime;
+    private int NCOLS = 4;
+    private int NROWS;
+    private int sizeCard;
+    private int sizeConstraint;
+    private ProgressBar progressBar;
+    private Timeline timelinePB;    // per disattivare la timeline se si finisce un livello prima della fine del tempo
     private int nLife;
-    TimeBar timeBar;
 
+    Game game;
 
     /**
      * Initializes the GameController class.
@@ -78,7 +63,6 @@ public class GameController extends Thread{
     @FXML
     public void initialize() {
         game = new Game("", 1, 1);
-
     }
 
     /**
@@ -99,9 +83,7 @@ public class GameController extends Thread{
 
     @FXML
     void update() {
-        lblTheme.textProperty().set("" + game.getTheme());
-        lblMode.textProperty().set("" + game.getMode());
-        lblLevel.textProperty().set("" + game.getLevel());
+        lblLevel.textProperty().set("Level: " + game.getLevel());
         disableComponent();
 
         btnStart.setVisible(true);
@@ -114,27 +96,19 @@ public class GameController extends Thread{
         }
 
         if (game.getMode() == 1) {          // 1 = Life
-            progressBar.setVisible(false);
             nLife = 3;
-            fillGridLife();
+
+            fillGridLife(nLife);
         } else if (game.getMode() == 2) {   // 2 = Time
             gridLife.setVisible(false);
-            progressBar = new ProgressBar();
-            System.out.println("lo è? " + progressBar.isIndeterminate());
-            progressBar.indeterminateProperty();
-            System.out.println("lo è? " + progressBar.isIndeterminate());
-            timeBar = new TimeBar(progressBar);
-
         }
-
 
         initializeGame();
     }
 
     private void disableComponent() {
         gridPane.getChildren().clear();
-        anchorPopup.setDisable(true);
-        anchorPopup.setVisible(false);
+
         gridPane.setDisable(true);
     }
 
@@ -168,6 +142,10 @@ public class GameController extends Thread{
                 }
             }
 
+            if (game.getMode() == 2) {
+                setProgressBar();
+            }
+
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(getShowTime()), actionEvent1 -> {
                 for (int rows = 0; rows < NROWS; ++rows) {
                     for (int cols = 0; cols < NCOLS; ++cols) {
@@ -176,17 +154,29 @@ public class GameController extends Thread{
                 }
 
                 gridPane.setDisable(false);
+
+                if (game.getMode() == 2) {
+                    double seconds = getTime(game.getLevel());
+                    double minutes = seconds / 60;
+                    startProgress(progressBar, minutes, seconds);
+                }
             }));
             timeline.play();
-        progressBar.setProgress(0.5);
-        progressBar.progressProperty().set(0.7);
 
-        System.out.println("get " + progressBar.getProgress());
-         //   startProgress(actionEvent);
         });
 
-
         startGame(cardCouples);
+    }
+
+    private void setProgressBar() {
+        progressBar = new ProgressBar();
+        progressBar.setProgress(0);
+        progressBar.setMinWidth(200);
+        progressBar.setMaxWidth(500);
+
+        progressBar.setMinHeight(25);
+        vBoxTime.getChildren().add(progressBar);
+        progressBar.setStyle("-fx-control-inner-background: black;");
     }
 
     private double getShowTime() {
@@ -232,12 +222,15 @@ public class GameController extends Thread{
     }
 
     private void setContraints() {
-        if (game.getLevel() == 1 || game.getLevel() == 2) {
+        if (game.getLevel() == 1) {
             sizeCard = 130;
             sizeConstraint = 160;
-        } else if (game.getLevel() == 3 || game.getLevel() == 4) {
+        } else if (game.getLevel() == 2) {
             sizeCard = 115;
             sizeConstraint = 125;
+        } else if (game.getLevel() == 3 || game.getLevel() == 4) {
+            sizeCard = 105;
+            sizeConstraint = 110;
         }
 
         ColumnConstraints colConstraint = new ColumnConstraints(sizeConstraint);
@@ -302,13 +295,9 @@ public class GameController extends Thread{
                      */
                     if (uncoveredIndex.size() == cardCouples.size()) {
                         if (game.getLevel() < 4) {
-                            try {
-                                nextLevel();
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
+                            nextLevel();
                         } else {
-                            win();
+                            displayWinPopup();
                         }
                     }
                 }
@@ -325,20 +314,18 @@ public class GameController extends Thread{
      */
     @FXML
     private boolean checkCoupleSelected(ArrayList<Integer> cardCouples, ArrayList<Integer> index) throws InterruptedException {
-        //      System.out.println("Stampa array da funzione: " + Arrays.toString(index.toArray()));
         if (Objects.equals(cardCouples.get(index.get(0)), cardCouples.get(index.get(1)))) {
-            //         System.out.printf("uguali [%d][%d]", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
             if (game.getMode() == 2) {
-                System.out.println("aumento tempo");
+                increaseTime(getIncreaseTime(game.getLevel()));
+
             }
-
-
             return true;
         } else {
-            //          System.out.printf("diversi [%d][%d]%n%n", cardCouples.get(index.get(0)), cardCouples.get(index.get(1)));
             if (game.getMode() == 1) {
-                System.out.println("togliamo una vita");
                 removeLife();
+            } else {
+                double secondsToSubtract = getIncreaseTime(game.getLevel()) / 2;
+                decreseTime(secondsToSubtract);
             }
             int col1 = index.get(0) % NCOLS;
             int row1 = index.get(0) / NCOLS;
@@ -354,29 +341,80 @@ public class GameController extends Thread{
         return false;
     }
 
-    private void removeLife() {
-        --nLife;
-        switch (nLife) {
-            case (2) -> imgLife3.setVisible(false);
-            case (1) -> imgLife2.setVisible(false);
-            case (0) -> imgLife1.setVisible(false);
+    private void decreseTime(double secondsToSubtract) {
+        Duration duration = new Duration(secondsToSubtract * 1000);
+        timelinePB.jumpTo(timelinePB.getCurrentTime().add(duration));
+    }
+
+    private void increaseTime(double secondsToAdd) {
+        Duration duration = new Duration(secondsToAdd * 1000);
+        timelinePB.jumpTo(timelinePB.getCurrentTime().subtract(duration));
+    }
+
+    private double getTime(int level) {  // in base al livello restituisce il tempo di durata della time bar
+        switch (level) {
+            case (1) -> { return 15; }
+            case (2) -> { return 30; }
+            case (3) -> { return 40; }
+            case (4) -> { return 50; }
         }
+        return 0;
+    }
+
+    private double getIncreaseTime(int level) {
+        switch (level) {
+            case (1) -> { return 1; }
+            case (2) -> { return 1.5; }
+            case (3) -> { return 2; }
+            case (4) -> { return 3; }
+        }
+        return 0;
+    }
+
+
+
+@FXML
+    private void removeLife() {             // 0, 1, 2, 3, 4, 5
+    --nLife;
+    switch (nLife) {
+        case (2) -> imgLife3.setVisible(false);
+        case (1) -> imgLife2.setVisible(false);
+        case (0) -> imgLife1.setVisible(false);
+    }
 
         if (nLife == 0) {
-            lose();
+            displayLosePopup();
         }
     }
 
     /**
-     * Shows a pop-up announcing the lose of the game.
+     * Shows a pop-up announcing the win of the game.
      */
-    @FXML
-    private void lose() {
-        System.out.println("Hai perso");
+    private void displayWinPopup() {
+        if (game.getMode() == 2) {
+            timelinePB.stop();
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("You won!");
+        alert.setHeaderText(null);
+        alert.setContentText("Congratulations! You won the game!");
+
+        alert.showAndWait();
+    }
+    /**
+     * Shows a pop-up announcing the loose of the game.
+     */
+    private void displayLosePopup() {
         gridPane.setDisable(true);
-        anchorPopup.setDisable(false);
-        anchorPopup.setVisible(true);
-        lblWinOrLose.setText("Lose");
+        if (game.getMode() == 2) {
+            timelinePB.stop();
+        }
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("You lost");
+        alert.setHeaderText(null);
+        alert.setContentText("Unfortunately you lost the game!");
+
+        alert.show();
     }
 
     /**
@@ -440,17 +478,20 @@ public class GameController extends Thread{
 
     /**
      * Increases the level and restarts the game calling the update() method
-     *
-     * @throws InterruptedException
      */
-    private void nextLevel() throws InterruptedException {
+    private void nextLevel() {
         game.setLevel(game.getLevel() + 1);
         lblLevel.setText("" + game.getLevel());
+        if (game.getMode() == 2) {
+            timelinePB.stop();
+            vBoxTime.getChildren().remove(vBoxTime.getChildren().size() - 1);
+        }
+
 
         update();
     }
 
-    private void fillGridLife() {
+    private void fillGridLife(int nLife) {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/heart.png")), 70, 70, true, true);
         imgLife3.setImage(image);
         imgLife2.setImage(image);
@@ -458,17 +499,6 @@ public class GameController extends Thread{
         imgLife3.setVisible(true);
         imgLife2.setVisible(true);
         imgLife1.setVisible(true);
-    }
-
-    /**
-     * Shows a pop-up announcing the win of the game.
-     */
-    private void win() {
-        System.out.println("Hai vinto");
-        gridPane.setDisable(true);
-        anchorPopup.setDisable(false);
-        anchorPopup.setVisible(true);
-        lblWinOrLose.setText("Win");
     }
 
     public void returnToMenu(ActionEvent actionEvent) throws IOException {
@@ -492,46 +522,32 @@ public class GameController extends Thread{
         game.setLevel(1);
         NCOLS = 4;
         update();
+        if (game.getMode() == 2) {
+            timelinePB.stop();
+            vBoxTime.getChildren().remove(vBoxTime.getChildren().size() - 1);
+        }
     }
 
-    public void startProgress(ActionEvent actionEvent) {
-        Thread thread = new Thread(timeBar);
-        thread.setDaemon(true);
-        thread.start();
-    }
 
-    public class TimeBar implements Runnable{
-        ProgressBar progressBar;
+    @FXML
+    public void startProgress(ProgressBar progressBar, double minutes, double sec) {
+        IntegerProperty seconds = new SimpleIntegerProperty();
+        progressBar.progressProperty().bind(seconds.divide(sec));
+        timelinePB = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(seconds, 0)),
+                new KeyFrame(Duration.minutes(minutes), e-> {
+                    // do anything you need here on completion...
 
-        public TimeBar(ProgressBar progressBar) {
-            this.progressBar = progressBar;
-        }
-        @Override
-        public void run() {
-            //   System.out.println("progress = " + progressBar.getProgress());
-            while(progressBar.getProgress() <= 1) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setProgress(progressBar.getProgress() + 0.1);
+                    displayLosePopup();
 
-                        System.out.println("progress = " + progressBar.getProgress());
+                }, new KeyValue(seconds, sec))
+        );
+        timelinePB.setAutoReverse(true);
 
-                    }
-                });
-                synchronized (this) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+        timelinePB.play();
+        progressBar.setStyle("-fx-accent: blue;");
+        progressBar.setStyle("-fx-control-inner-background: black;");
 
-
-            }
-            System.out.println("finito");
-
-        }
     }
 
 }
