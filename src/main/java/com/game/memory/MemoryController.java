@@ -108,7 +108,7 @@ public class MemoryController {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game-view.fxml"));
-            Scene scene = new Scene(loader.load(), 800, 550);
+            Scene scene = new Scene(loader.load(), 800, 650);
             stage = new Stage();
             stage.setScene(scene);
             stage.setTitle("Memory");

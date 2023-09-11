@@ -85,7 +85,7 @@ public class GameController {
     void update() {
         lblLevel.textProperty().set("Level: " + game.getLevel());
         disableComponent();
-
+        gridPane.setVisible(true);
         btnStart.setVisible(true);
 
         if (game.getLevel() == 4) {
@@ -108,7 +108,6 @@ public class GameController {
 
     private void disableComponent() {
         gridPane.getChildren().clear();
-
         gridPane.setDisable(true);
     }
 
@@ -270,41 +269,41 @@ public class GameController {
         /**
          * Event handler: the card is revealed when an ImageView has been clicked.
          */
-        gridPane.setOnMouseClicked(event -> {
-            index[0] = (indexCard(event));
+            gridPane.setOnMouseClicked(event -> {
+                index[0] = (indexCard(event));
 
-            showImage(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
-            if (!uncoveredIndex.contains(index[0]) && !indexList.contains(index[0])) {
-                indexList.add(index[0]);
-            }
-
-            if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
-                try {
-                    ris[0] = checkCoupleSelected(cardCouples, indexList);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                showImage(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
+                if (!uncoveredIndex.contains(index[0]) && !indexList.contains(index[0])) {
+                    indexList.add(index[0]);
                 }
 
-                if (!ris[0]) {
-                    System.out.println("diverse");
-                } else {
-                    uncoveredIndex.addAll(indexList);
+                if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
+                    try {
+                        ris[0] = checkCoupleSelected(cardCouples, indexList);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                    /**
-                     * The level increases when all pairs have been uncovered.
-                     */
-                    if (uncoveredIndex.size() == cardCouples.size()) {
-                        if (game.getLevel() < 4) {
-                            nextLevel();
-                        } else {
-                            displayWinPopup();
+                    if (!ris[0]) {
+                        System.out.println("diverse");
+                    } else {
+                        uncoveredIndex.addAll(indexList);
+
+                        /**
+                         * The level increases when all pairs have been uncovered.
+                         */
+                        if (uncoveredIndex.size() == cardCouples.size()) {
+                            if (game.getLevel() < 4) {
+                                nextLevel();
+                            } else {
+                                displayWinPopup();
+                            }
                         }
                     }
+                    indexList.clear();
                 }
-                indexList.clear();
-            }
-        });
-    }
+            });
+        }
 
     /**
      * @param cardCouples the ArrayList containing all the images.
@@ -383,7 +382,10 @@ public class GameController {
     }
 
         if (nLife == 0) {
+         //   gridPane.setDisable(true);
+            System.out.println("gridpane disable? " + gridPane.isDisable() + " " + gridPane.isDisabled());
             displayLosePopup();
+
         }
     }
 
@@ -404,8 +406,11 @@ public class GameController {
     /**
      * Shows a pop-up announcing the loose of the game.
      */
+
+    @FXML
     private void displayLosePopup() {
-        gridPane.setDisable(true);
+     //   gridPane.setDisable(true);
+        gridPane.setVisible(false);
         if (game.getMode() == 2) {
             timelinePB.stop();
         }
@@ -415,6 +420,8 @@ public class GameController {
         alert.setContentText("Unfortunately you lost the game!");
 
         alert.show();
+    //    game.setLevel(1);
+     //   update();
     }
 
     /**
