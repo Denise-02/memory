@@ -74,7 +74,9 @@ public class MemoryController {
         imgSpongebob.setOnMouseClicked(mouseEvent -> { theme = "Spongebob"; btnMode.setVisible(true); });
 
         /**
-         * btnStart turns visible when Game. Mode is set.
+         * Game.mode is set as:
+         * 1 if "life" was chosen, 2 otherwise
+         * btnStart turns visible when Game.mode is set.
          */
         modeLife.setOnAction(actionEvent -> {
             btnMode.setText(modeLife.getText());
@@ -87,12 +89,6 @@ public class MemoryController {
             btnStart.setVisible(true);
             mode = 2;
         });
-
-        /**
-         * Game.mode is set as:
-         * 1 if "life" was chosen, 2 otherwise
-         */
-    //    mode = btnMode.getText().compareTo("Mode") == 0 ? 1 : 2;
     }
 
     /**
@@ -128,5 +124,4 @@ public class MemoryController {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -17,7 +17,6 @@ public class Game {
      */
     private int level;
 
-
     /**
      * The constructor of a Game
      * @param theme The theme of this game. The player can choose between: PacMan, Pokemon, SuperMario and Spongebob
@@ -53,4 +52,5 @@ public class Game {
     public int getLevel() {
         return level;
     }
+
 }

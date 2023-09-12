@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.random.RandomGenerator;
 
-
 public class GameController {
     @FXML
     private GridPane gridPane;
@@ -68,10 +67,7 @@ public class GameController {
     /**
      * Receives the game settings from MemoryController.
      *
-     * @param theme
-     * @param mode  1 is life, 2 is time
-     * @param level
-     * @throws InterruptedException
+     * @param mode 1 is life, 2 is time
      */
     public void receiveData(String theme, int mode, int level) throws InterruptedException {
         game.setTheme(theme);
@@ -95,30 +91,32 @@ public class GameController {
             NROWS = game.getLevel() + 1;
         }
 
-        if (game.getMode() == 1) {          // 1 = Life
+        if (game.getMode() == 1) {
             nLife = 3;
-
             fillGridLife(nLife);
-        } else if (game.getMode() == 2) {   // 2 = Time
+        } else if (game.getMode() == 2) {
             gridLife.setVisible(false);
         }
 
         initializeGame();
     }
 
+    /**
+     * Disables gridPane to prevent the player from changing it.
+     */
     private void disableComponent() {
         gridPane.getChildren().clear();
         gridPane.setDisable(true);
     }
 
     /**
-     * Sets the game scene.
+     * Sets the game scene using matrix algorithm and Java Data Structures as Set and ArrayList.
      */
     @FXML
     private void initializeGame() {
         ArrayList<Integer> cardCouples = randomCards();
 
-        setContraints();
+        setConstraints();
 
         for (int rows = 0; rows < NROWS; ++rows) {
             for (int cols = 0; cols < NCOLS; ++cols) {
@@ -161,12 +159,14 @@ public class GameController {
                 }
             }));
             timeline.play();
-
         });
 
         startGame(cardCouples);
     }
 
+    /**
+     * Sets the progressBar indicating the remaining time for playing this round.
+     */
     private void setProgressBar() {
         progressBar = new ProgressBar();
         progressBar.setProgress(0);
@@ -178,6 +178,10 @@ public class GameController {
         progressBar.setStyle("-fx-control-inner-background: black;");
     }
 
+    /**
+     * @return the time for which cards will be shown before the game starts.
+     * This value will be greater for higher levels.
+     */
     private double getShowTime() {
         double showTime = 0;
         switch (game.getLevel()) {
@@ -189,6 +193,13 @@ public class GameController {
         return showTime;
     }
 
+    /**
+     * Chooses the cards of this round.
+     * It fills a Set with @length different cards, randomly chosen.
+     * Then copy them in the arrayList two times and shuffles them.
+     *
+     * @return an ArrayList containing couples of different cards.
+     */
     private ArrayList<Integer> randomCards() {
         /**
          * The Set is used to randomize the choice of cards without duplicates.
@@ -220,7 +231,10 @@ public class GameController {
         return cardCouples;
     }
 
-    private void setContraints() {
+    /**
+     * Sets column and row constraints and images size depending on the current level.
+     */
+    private void setConstraints() {
         if (game.getLevel() == 1) {
             sizeCard = 130;
             sizeConstraint = 160;
@@ -269,54 +283,53 @@ public class GameController {
         /**
          * Event handler: the card is revealed when an ImageView has been clicked.
          */
-            gridPane.setOnMouseClicked(event -> {
-                index[0] = (indexCard(event));
+        gridPane.setOnMouseClicked(event -> {
+            index[0] = (indexCard(event));
 
-                showImage(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
-                if (!uncoveredIndex.contains(index[0]) && !indexList.contains(index[0])) {
-                    indexList.add(index[0]);
+            showImage(cardCouples, index[0] % NCOLS, index[0] / NCOLS, index[0]);
+            if (!uncoveredIndex.contains(index[0]) && !indexList.contains(index[0])) {
+                indexList.add(index[0]);
+            }
+
+            if (indexList.size() == 2) {
+                try {
+                    ris[0] = checkCoupleSelected(cardCouples, indexList);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
 
-                if (indexList.size() == 2) {        // se sono uguali torna a initializeGame. se sono diverse svuoto la lista e ne può  selezionare altre 2
-                    try {
-                        ris[0] = checkCoupleSelected(cardCouples, indexList);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                if (ris[0]) {
+                    uncoveredIndex.addAll(indexList);
 
-                    if (!ris[0]) {
-                        System.out.println("diverse");
-                    } else {
-                        uncoveredIndex.addAll(indexList);
-
-                        /**
-                         * The level increases when all pairs have been uncovered.
-                         */
-                        if (uncoveredIndex.size() == cardCouples.size()) {
-                            if (game.getLevel() < 4) {
-                                nextLevel();
-                            } else {
-                                displayWinPopup();
-                            }
+                    /**
+                     * The level increases when all pairs have been uncovered.
+                     */
+                    if (uncoveredIndex.size() == cardCouples.size()) {
+                        if (game.getLevel() < 4) {
+                            nextLevel();
+                        } else {
+                            displayWinPopup();
                         }
                     }
-                    indexList.clear();
                 }
-            });
-        }
+                indexList.clear();
+            }
+        });
+    }
 
     /**
+     * Checks if selected cards are equals.
+     * If the player has chosen Game.mode=life, and if the cards are different, he will lose one life.
+     * If the player has chosen Game.mode=time, and if the cards are equal, time will be added to the progressbar.
      * @param cardCouples the ArrayList containing all the images.
-     * @param index       the ArrayList containing the cards to be compared
+     * @param index the ArrayList containing the cards to be compared
      * @return true if the selected ImageViews contain the same image, false otherwise.
-     * @throws InterruptedException
      */
     @FXML
     private boolean checkCoupleSelected(ArrayList<Integer> cardCouples, ArrayList<Integer> index) throws InterruptedException {
         if (Objects.equals(cardCouples.get(index.get(0)), cardCouples.get(index.get(1)))) {
             if (game.getMode() == 2) {
                 increaseTime(getIncreaseTime(game.getLevel()));
-
             }
             return true;
         } else {
@@ -324,7 +337,7 @@ public class GameController {
                 removeLife();
             } else {
                 double secondsToSubtract = getIncreaseTime(game.getLevel()) / 2;
-                decreseTime(secondsToSubtract);
+                decreaseTime(secondsToSubtract);
             }
             int col1 = index.get(0) % NCOLS;
             int row1 = index.get(0) / NCOLS;
@@ -340,52 +353,83 @@ public class GameController {
         return false;
     }
 
-    private void decreseTime(double secondsToSubtract) {
+    /**
+     * Decreases time in the progressBar.
+     * @param secondsToSubtract
+     */
+    private void decreaseTime(double secondsToSubtract) {
         Duration duration = new Duration(secondsToSubtract * 1000);
         timelinePB.jumpTo(timelinePB.getCurrentTime().add(duration));
     }
 
+    /**
+     * Increases time in the progressbar.
+     * @param secondsToAdd
+     */
     private void increaseTime(double secondsToAdd) {
         Duration duration = new Duration(secondsToAdd * 1000);
         timelinePB.jumpTo(timelinePB.getCurrentTime().subtract(duration));
     }
 
-    private double getTime(int level) {  // in base al livello restituisce il tempo di durata della time bar
+    /**
+     * @return the time length of this round depending on this level.
+     */
+    private double getTime(int level) {
         switch (level) {
-            case (1) -> { return 15; }
-            case (2) -> { return 30; }
-            case (3) -> { return 40; }
-            case (4) -> { return 50; }
+            case (1) -> {
+                return 15;
+            }
+            case (2) -> {
+                return 30;
+            }
+            case (3) -> {
+                return 40;
+            }
+            case (4) -> {
+                return 50;
+            }
         }
         return 0;
     }
 
+    /**
+     * Establishes a duration depending on this level.
+     * @param level
+     * @return the slice of time that will be added if the player chose a correct couple of cards
+     */
     private double getIncreaseTime(int level) {
         switch (level) {
-            case (1) -> { return 1; }
-            case (2) -> { return 1.5; }
-            case (3) -> { return 2; }
-            case (4) -> { return 3; }
+            case (1) -> {
+                return 1;
+            }
+            case (2) -> {
+                return 1.5;
+            }
+            case (3) -> {
+                return 2;
+            }
+            case (4) -> {
+                return 3;
+            }
         }
         return 0;
     }
 
-
-
-@FXML
-    private void removeLife() {             // 0, 1, 2, 3, 4, 5
-    --nLife;
-    switch (nLife) {
-        case (2) -> imgLife3.setVisible(false);
-        case (1) -> imgLife2.setVisible(false);
-        case (0) -> imgLife1.setVisible(false);
-    }
+    /**
+     * Decreases the number of remaining lives.
+     * When lives are over, a popup announcing the end of the game is displayed.
+     */
+    @FXML
+    private void removeLife() {
+        --nLife;
+        switch (nLife) {
+            case (2) -> imgLife3.setVisible(false);
+            case (1) -> imgLife2.setVisible(false);
+            case (0) -> imgLife1.setVisible(false);
+        }
 
         if (nLife == 0) {
-         //   gridPane.setDisable(true);
-            System.out.println("gridpane disable? " + gridPane.isDisable() + " " + gridPane.isDisabled());
             displayLosePopup();
-
         }
     }
 
@@ -403,13 +447,12 @@ public class GameController {
 
         alert.showAndWait();
     }
+
     /**
      * Shows a pop-up announcing the loose of the game.
      */
-
     @FXML
     private void displayLosePopup() {
-     //   gridPane.setDisable(true);
         gridPane.setVisible(false);
         if (game.getMode() == 2) {
             timelinePB.stop();
@@ -420,18 +463,15 @@ public class GameController {
         alert.setContentText("Unfortunately you lost the game!");
 
         alert.show();
-    //    game.setLevel(1);
-     //   update();
     }
 
     /**
      * This method computes the index of matrix cell using matrix algorithm.
-     *
      * @param e Event: gridPane.setOnMouseClicked
      * @return the index, in GridPane matrix, of the selected card.
      */
     @FXML
-    private int indexCard(MouseEvent e) {       // ritorna l'indice nell'array della carta selezionata, calcolato con la formula nr * NCOLS + nc
+    private int indexCard(MouseEvent e) {
         Node clickedNode = e.getPickResult().getIntersectedNode();
         Integer colIndex = GridPane.getColumnIndex(clickedNode);
         Integer rowIndex = GridPane.getRowIndex(clickedNode);
@@ -441,11 +481,10 @@ public class GameController {
 
     /**
      * Shows the card taking it from cardCouples ArrayList
-     *
      * @param cardCouples the ArrayList containing all the images.
-     * @param cols        the column index of the cell
-     * @param rows        the row index of the cell
-     * @param count       the index of the image in cardCouples ArrayList
+     * @param cols the column index of the cell
+     * @param rows the row index of the cell
+     * @param count the index of the image in cardCouples ArrayList
      */
     private void showImage(ArrayList<Integer> cardCouples, int cols, int rows, int count) {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/" + game.getTheme() + "/" + cardCouples.get(count) + ".jpg")), sizeCard, sizeCard, true, true);
@@ -457,7 +496,6 @@ public class GameController {
 
     /**
      * Cover the card at indicated (cols, rows) cell.
-     *
      * @param cols the column index of the cell to be covered.
      * @param rows the row index of the cell to be covered.
      */
@@ -471,7 +509,6 @@ public class GameController {
 
     /**
      * Sends column and row indexes of two cards to coverImage method.
-     *
      * @param cols1 the column index of the first card
      * @param rows1 the row index of the first card
      * @param cols2 the column index of the second card
@@ -481,7 +518,6 @@ public class GameController {
         coverImage(cols1, rows1);
         coverImage(cols2, rows2);
     }
-
 
     /**
      * Increases the level and restarts the game calling the update() method
@@ -493,11 +529,13 @@ public class GameController {
             timelinePB.stop();
             vBoxTime.getChildren().remove(vBoxTime.getChildren().size() - 1);
         }
-
-
         update();
     }
 
+    /**
+     * Fills the gridPane showing the number of remaining lives.
+     * @param nLife
+     */
     private void fillGridLife(int nLife) {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/heart.png")), 70, 70, true, true);
         imgLife3.setImage(image);
@@ -508,6 +546,12 @@ public class GameController {
         imgLife1.setVisible(true);
     }
 
+    /**
+     * memory-view.fxml is shown when menu button is clicked.
+     * game-view.fxml is closed.
+     * @param actionEvent Event: onAction="#returnToMenu"
+     * @throws IOException
+     */
     public void returnToMenu(ActionEvent actionEvent) throws IOException {
         Node node = (Node) actionEvent.getSource();
         Stage stage = (Stage) node.getScene().getWindow();
@@ -522,9 +566,12 @@ public class GameController {
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("memoryImages/others/brain.png"))));
         stage.setScene(scene);
         stage.show();
-
     }
 
+    /**
+     * It calls update() method, restarting the game with previous settings.
+     * @param actionEvent
+     */
     public void restart(ActionEvent actionEvent) {
         game.setLevel(1);
         NCOLS = 4;
@@ -535,26 +582,21 @@ public class GameController {
         }
     }
 
-
+    /**
+     * Starts and manages the progressBar. Time will run and will be added when the player find a right pair of cards.
+     * A popup will be chosen when the time is over.
+     */
     @FXML
     public void startProgress(ProgressBar progressBar, double minutes, double sec) {
         IntegerProperty seconds = new SimpleIntegerProperty();
         progressBar.progressProperty().bind(seconds.divide(sec));
-        timelinePB = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(seconds, 0)),
-                new KeyFrame(Duration.minutes(minutes), e-> {
-                    // do anything you need here on completion...
-
-                    displayLosePopup();
-
-                }, new KeyValue(seconds, sec))
-        );
+        timelinePB = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(seconds, 0)), new KeyFrame(Duration.minutes(minutes), e -> {
+            displayLosePopup();
+        }, new KeyValue(seconds, sec)));
         timelinePB.setAutoReverse(true);
 
         timelinePB.play();
         progressBar.setStyle("-fx-accent: blue;");
         progressBar.setStyle("-fx-control-inner-background: black;");
-
     }
-
 }
